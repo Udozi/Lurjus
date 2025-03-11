@@ -29,6 +29,16 @@ korttien_y_sijainnit = {
     3 : 200,
     4 : 200,
 }
+
+paaValikko = PaaValikko()
+#Päävalikon napit
+kampanja_nappi = Nappi("kampanja")
+pikapeli_nappi = Nappi("pikapeli")
+tutoriaali_nappi = Nappi("tutoriaali")
+asetukset_nappi = Nappi("asetukset")
+tekijät_nappi = Nappi("tekijät")
+lopeta_nappi = Nappi("lopeta")
+
 viimeisin_lyöty = Kortti()
 etene_nappi = Nappi("etene")
 pakene_nappi = Nappi("pakene")

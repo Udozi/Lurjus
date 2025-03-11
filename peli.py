@@ -200,24 +200,32 @@ def prosessoi_tapahtumat():
 
         elif event.type == MOUSEBUTTONDOWN:    
             if Muuttujat.skene == "PaaValikko":
-                if nappiKampanja.rect.collidepoint(pygame.mouse.get_pos()):
+                if kampanja_nappi.rect.collidepoint(pygame.mouse.get_pos()):
                     Muuttujat.skene = "Kampanja"
                     print(Muuttujat.skene)
+                    Muuttujat.skene = "PaaValikko"
                                     
-                elif nappiPikapeli.rect.collidepoint(pygame.mouse.get_pos()):
+                elif pikapeli_nappi.rect.collidepoint(pygame.mouse.get_pos()):
                     Muuttujat.skene = "Pikapeli"
                     aloita_peli()
                     print(Muuttujat.skene)
                                     
-                elif nappiTutoriaali.rect.collidepoint(pygame.mouse.get_pos()):
+                elif tutoriaali_nappi.rect.collidepoint(pygame.mouse.get_pos()):
                     Muuttujat.skene = "Tutoriaali"
                     print(Muuttujat.skene)
+                    Muuttujat.skene = "PaaValikko"
                                     
-                elif nappiTekijat.rect.collidepoint(pygame.mouse.get_pos()):
+                elif tekijät_nappi.rect.collidepoint(pygame.mouse.get_pos()):
                     Muuttujat.skene = "Tekijat"
                     print(Muuttujat.skene)
+                    Muuttujat.skene = "PaaValikko"
+                    
+                elif asetukset_nappi.rect.collidepoint(pygame.mouse.get_pos()):
+                    Muuttujat.skene = "Asetukset"
+                    print(Muuttujat.skene)
+                    Muuttujat.skene = "PaaValikko"
                                     
-                elif nappiLopeta.rect.collidepoint(pygame.mouse.get_pos()):
+                elif lopeta_nappi.rect.collidepoint(pygame.mouse.get_pos()):
                     print("Kiitos käynnistä!")
                     Muuttujat.kaynnissa = False
 
@@ -293,12 +301,13 @@ def peli_loop(skene):
 def piirra_kaikki(skene):
 
     if skene == "PaaValikko":
-        paaValikko.piirra(PIIRTOALUSTA)
-        nappiKampanja.piirra(PIIRTOALUSTA)
-        nappiPikapeli.piirra(PIIRTOALUSTA)
-        nappiTutoriaali.piirra(PIIRTOALUSTA)
-        nappiTekijat.piirra(PIIRTOALUSTA)
-        nappiLopeta.piirra(PIIRTOALUSTA)
+        paaValikko.piirrä(PIIRTOALUSTA)
+        kampanja_nappi.piirrä(PIIRTOALUSTA, 200, 225)
+        pikapeli_nappi.piirrä(PIIRTOALUSTA, 600, 225)
+        tutoriaali_nappi.piirrä(PIIRTOALUSTA, 200, 375)
+        asetukset_nappi.piirrä(PIIRTOALUSTA, 600, 375)
+        tekijät_nappi.piirrä(PIIRTOALUSTA, 200, 525)
+        lopeta_nappi.piirrä(PIIRTOALUSTA, 600, 525)
         pygame.display.flip()
         
     elif skene == "Pikapeli":
@@ -324,13 +333,7 @@ def kaynnista():
         
         piirra_kaikki(Muuttujat.skene)
         prosessoi_tapahtumat()
-
-paaValikko = PaaValikko()
-nappiKampanja = NappiKampanja()
-nappiPikapeli = NappiPikapeli() 
-nappiTutoriaali = NappiTutoriaali()
-nappiTekijat = NappiTekijat()
-nappiLopeta = NappiLopeta()         
+     
 kaynnista()
 
 pygame.quit()

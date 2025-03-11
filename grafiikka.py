@@ -10,57 +10,7 @@ class PaaValikko(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = (400, 300)
         
-    def piirra(self, tausta):
-        tausta.blit(self.image, self.rect)
-
-class NappiKampanja(pygame.sprite.Sprite):
-    def __init__(self):
-        super().__init__()
-        self.image = pygame.image.load("kuvat/menuKampanja.png")
-        self.rect = self.image.get_rect()
-        self.rect.center = (200, 225)
-        
-    def piirra(self, tausta):
-        tausta.blit(self.image, self.rect)
-        
-class NappiPikapeli(pygame.sprite.Sprite):
-    def __init__(self):
-        super().__init__()
-        self.image = pygame.image.load("kuvat/menuPikapeli.png")
-        self.rect = self.image.get_rect()
-        self.rect.center = (600, 225)
-        
-    def piirra(self, tausta):
-        tausta.blit(self.image, self.rect)
-
-class NappiTutoriaali(pygame.sprite.Sprite):
-    def __init__(self):
-        super().__init__()
-        self.image = pygame.image.load("kuvat/menuTutoriaali.png")
-        self.rect = self.image.get_rect()
-        self.rect.center = (200, 375)
-        
-    def piirra(self, tausta):
-        tausta.blit(self.image, self.rect)
-        
-class NappiTekijat(pygame.sprite.Sprite):
-    def __init__(self):
-        super().__init__()
-        self.image = pygame.image.load("kuvat/menuTekijat.png")
-        self.rect = self.image.get_rect()
-        self.rect.center = (600, 375)
-        
-    def piirra(self, tausta):
-        tausta.blit(self.image, self.rect)
-        
-class NappiLopeta(pygame.sprite.Sprite):
-    def __init__(self):
-        super().__init__()
-        self.image = pygame.image.load("kuvat/menuLopeta.png")
-        self.rect = self.image.get_rect()
-        self.rect.center = (400, 525)
-        
-    def piirra(self, tausta):
+    def piirrä(self, tausta):
         tausta.blit(self.image, self.rect)
         
 class Nappi(pygame.sprite.Sprite):
@@ -69,12 +19,15 @@ class Nappi(pygame.sprite.Sprite):
     def __init__(self, toiminto):
         super().__init__()
         self.toiminto = toiminto
-        match toiminto:
-            case "etene": self.image = pygame.image.load("kuvat/etene_nappi.png")
-            case "pakene": self.image = pygame.image.load("kuvat/pakene_nappi.png")
+        latausnimi = "kuvat/napit/" + toiminto + "_nappi.png"
+        self.image = pygame.image.load(latausnimi)
         self.rect = self.image.get_rect()
 
-    def piirrä(self, pohja):
+    def piirrä(self, pohja, xpos = None, ypos = None):
+        
+        if xpos != None and ypos != None:
+            self.rect.center = (xpos, ypos)
+        
         pohja.blit(self.image, self.rect)
 
 class Teksti(pygame.sprite.Sprite):
