@@ -1,0 +1,81 @@
+Suorita peli.py pelataksesi. Peli on tehty versiolla Python 3.12.
+
+========================
+SCOUNDREL-PELIN SÄÄNNÖT
+========================
+
+Scoundrel on Zach Gagen ja Kurt Biegin vuonna 2011 kehittämä, tavallisilla pelikorteilla pelattava roguelike-yksinpeli.
+
+[ 1. Valmistelu ]
+
+Korttipakasta poistetaan kaikki jokerit, punaiset kuvakortit ja punaiset ässät. Niitä ei käytetä pelissä.
+Loput kortit sekoitetaan, ja asetetaan pinoon. Tämä on nostopino (tai valloitettava tyrmä).
+Nostopinosta paljastetaan pöydälle neljä korttia vierekkäin. Tämä on ensimmäinen huone.
+
+[ 2. Pelaaminen ]
+
+Pelissä edetään pelaamalla huoneen kortteja yksitellen. Kortit kuvastavat maansa mukaan joko aseita, vihollisia 
+ja parantavia taikajuomia. Pelaaja aloittaa 20 elämäpisteellä, mikä on myös suurin mahdollinen määrä elämäpisteitä.
+
+ -> Tässä digiversiossa kortteja pelataan kirjoittamalla terminaaliin numero 1, 2, 3 tai 4 ja painamalla ENTER.
+
+Kortteja pelataan huoneesta, kunnes niitä on vain yksi jäljellä. Silloin voit joko pelata huoneen viimeisenkin
+kortin* tai edetä jo seuraavaan huoneeseen paljastamalla kortteja pöydälle, kunnes huoneessa on taas neljä korttia.
+Peliä jatketaan, kunnes kaikki pelin kortit ovat poistopinossa, tai pelaajan terveyspisteet putoavat nollaan.
+
+Vaihtoehtoisesti huoneesta voi myös paeta, kun huoneessa on neljä korttia. Paetaksesi kahmaise huoneen kortit
+satunnaisessa järjestyksessä nostopinon pohjalle. Voit paeta pelin aikana kuinka monesta huoneesta vain, mutta
+et koskaan kahdesti peräkkäin.
+
+Korttien maat tarkoittavat seuraavaa:
+
+- PADAT ja RISTIT (2-A) ovat vihollisia. Niiden tekemä vahinko on kortin arvon suuruinen (ässä on 14).
+  - Jos päihität vihollisen ilman asetta käytössäsi, menetät viholliskortin arvon verran terveyspisteitä.
+    Tällöin vihollinen siirretään suoraan poistopinoon.      
+
+- RUUDUT (2-10) ovat aseita. Ne torjuvat arvonsa verran vahinkoa jokaiselta niillä päihitetyltä viholliselta.
+  Kun poimit aseen, sinun on otettava se käyttöön ja heitettävä mahdollinen edellinen ase ja sen päälle pinotut
+  viholliset poistopinoon.
+  - Jokaisella aseella voi päihittää aluksi minkä vain suuruisia vihollisia, mutta seuraavan tällä aseella
+    päihitettävän vihollisen täytyy aina olla edellistä pienempi. Aseella päihitetyt viholliset pinotaan
+    asekortin päälle niin, että ainakin aseen arvo ja viimeisin päihitetty vihollinen näkyvät.
+  - Jos sinulla on ase käytössä, sinun pitää päihittää vihollisia sitä käyttäen**. Voit heittää käytössä olevan
+    aseesi (ja sen päälle pinotut viholliset) milloin vain poistopinoon.
+
+- HERTAT (2-10) ovat parantavia taikajuomia, jotka kasvattavat terveyspisteitäsi niiden arvon verran.
+  Vain huoneen ensimmäisenä pelattu taikajuoma palauttaa terveyttä. Jos siis pelaat kaksi taikajuomaa saman huoneen
+  aikana, jälkimmäisellä ei ole vaikutusta. Pelatut taikajuomat menevät poistopinoon.
+  Pelaajalla ei voi koskaan olla yli 20 elämäpistettä.
+
+[ 3. Pelin loppu ja pisteytys ]
+
+- Jos pelaajan terveyspisteet laskevat nollaan tai sen ali, lasketaan nostopinon ja nykyisen huoneen vihollisten
+  vahingot yhteen. Tämä summa vähennetään pelaajan terveyspisteistä. Tämä negatiivinen arvo on tulos.
+
+- Jos pelaaja selviää koko tyrmän läpi eli kaikki pelin kortit ovat poistopakassa, tulos on yhtä suuri kuin
+  pelaajan jäljellä olevat terveyspisteet.
+  - Jos pelaajalla on pelin lopuksi 20 terveyspistettä ja pelin viimeisenä pelattu kortti on taikajuoma (hertta),
+    tulos on terveyspisteet + taikajuomakortin arvo.
+
+[ 4. Taisteluesimerkkejä ]
+
+4.1 Jos käytössä olevan aseesi arvo on 5 ja päihität 3 arvoisen vihollisen sillä, et ota vahinkoa (5 - 3 < 0).
+4.2 Jos taas päihität 11 arvoisen vihollisen sillä, otat 11 - 5 = 6 vahinkoa.
+
+4.3 Samalla aseella voi päihittää ensin 12 arvoisen vihollisen ja sitten 6 arvoisen vihollisen. 
+4.4 Jos 6 arvoisen vihollisen päihittää ensin, on 12 arvoinen vihollinen päihitettävä joko paljain käsin 
+      tai uudella aseella, mutta joka tapauksessa vanhasta aseesta on tällöin luovuttava**.
+
+[ 5. Tulevat päivitykset ]
+
+- Graafisen korttipelin implementaatio animaatioineen
+- Vaihtoehtoisia pelimuotoja (esim. alkuperäisillä säännöillä, lisäkorteilla, kustomoitavilla vaikeustasoilla?)
+
+[ 6. Sääntömuunnokset vs. alkuperäiset säännöt ]
+
+*) Alkuperäisten sääntöjen mukaan huoneesta pelataan aina kolme korttia neljästä ja jätetään viimeinen kortti osaksi
+   seuraavaa huonetta. Tässä digiversiossa myös huoneen viimeisen kortin voi pelata ennen seuraavaan huoneeseen
+   siirtymistä.
+
+**) Alkuperäisissä säännöissä sanotaan, että voit aina päihittää vihollisia paljainkin käsin, eikä asetta tarvitse
+    siirtää poistopinoon. Tässä digiversiossa paljain käsin taistelu edellyttää nykyisen aseen siirtämistä poistopinoon.
