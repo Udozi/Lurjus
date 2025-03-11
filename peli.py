@@ -302,12 +302,12 @@ def piirra_kaikki(skene):
 
     if skene == "PaaValikko":
         paaValikko.piirrä(PIIRTOALUSTA)
-        kampanja_nappi.piirrä(PIIRTOALUSTA, 200, 225)
-        pikapeli_nappi.piirrä(PIIRTOALUSTA, 600, 225)
-        tutoriaali_nappi.piirrä(PIIRTOALUSTA, 200, 375)
-        asetukset_nappi.piirrä(PIIRTOALUSTA, 600, 375)
-        tekijät_nappi.piirrä(PIIRTOALUSTA, 200, 525)
-        lopeta_nappi.piirrä(PIIRTOALUSTA, 600, 525)
+        kampanja_nappi.piirrä(PIIRTOALUSTA, 660, 480)
+        pikapeli_nappi.piirrä(PIIRTOALUSTA, 400, 480)
+        tutoriaali_nappi.piirrä(PIIRTOALUSTA, 140, 480)
+        asetukset_nappi.piirrä(PIIRTOALUSTA, 400, 565)
+        tekijät_nappi.piirrä(PIIRTOALUSTA, 140, 565)
+        lopeta_nappi.piirrä(PIIRTOALUSTA, 660, 565)
         pygame.display.flip()
         
     elif skene == "Pikapeli":
