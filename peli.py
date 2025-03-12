@@ -39,6 +39,7 @@ nykyinenAse = []
 # Yhden kortin siirtäminen nostopakasta pöydälle
 def paljasta_kortti():
     
+    poyta = poista_haamukortit()
     ylinKortti = nostoPakka[-1]
     poydattyKortti = ylinKortti
     nostoPakka.pop()
@@ -55,7 +56,10 @@ def pelaa_kortti(i):
     
     pelattavaKortti = poyta[i-1]
     vaikutus = pelattavaKortti.vaikutus()
-    poyta.pop(i-1)
+    haamukortti = Kortti()
+    haamukortti.luo_kortti("hertta",0,True)
+    poyta[i-1] = haamukortti
+    
     
     # Jos pelattu kortti on ruutu (=ase)
     if type(vaikutus) is not int:
@@ -100,33 +104,56 @@ def pelaa_kortti(i):
             
         Muuttujat.HP = Muuttujat.HP + hpMuutos
         Muuttujat.voiJuosta = False
-    
-    if poyta.__len__() < 2:
+        
+    korttejaPoydassa = laske_poytakortit()
+    if korttejaPoydassa < 2:
         Muuttujat.voiJuosta = True
     
-    if poyta.__len__() == 0:
+    if korttejaPoydassa == 0:
         Muuttujat.voiParantua = True
     
     if Muuttujat.HP > 20:
         Muuttujat.HP = 20
     
-    korttejaJaljella = nostoPakka.__len__() + poyta.__len__()
+    korttejaJaljella = nostoPakka.__len__() + korttejaPoydassa
     if Muuttujat.HP < 1 or korttejaJaljella == 0:
         Muuttujat.peliOhi = True
   
     return
 
-def karkaa_huoneesta():
+def laske_poytakortit():
+    haamuja = 0
+    for k in poyta:
+        if k.onhaamu: haamuja += 1
+    
+    kortteja = poyta.__len__() - haamuja
+    return(kortteja)
+
+def poista_haamukortit():
+    
+    uusiPoyta = poyta
+    pöydänKoko = len(poyta)
+    try:
+        for i in range(pöydänKoko):
+            if poyta[i].onhaamu:
+                uusiPoyta.pop(i) 
+    except:
+        return uusiPoyta
+          
+    return uusiPoyta
+
+def pakene_huoneesta():
 
     random.shuffle(poyta)
     nostoPakka[:0] = poyta
     poyta.clear()
     Muuttujat.voiJuosta = False
+    etene()
     return
 
 def etene():  
           
-    while poyta.__len__() < 4 and nostoPakka.__len__() > 0:
+    while laske_poytakortit() < 4 and nostoPakka.__len__() > 0:
         paljasta_kortti()
     
     Muuttujat.voiParantua = True    
@@ -180,7 +207,7 @@ def aloita_peli():
             uusiKortti.luo_kortti(m,a + 2)
             nostoPakka.append(uusiKortti)
     random.shuffle(nostoPakka)
-    while poyta.__len__() < 4 and nostoPakka.__len__() > 0:
+    while laske_poytakortit() < 4 and nostoPakka.__len__() > 0:
             paljasta_kortti()
 
     peli_loop("Pikapeli")
@@ -237,11 +264,14 @@ def peli_loop(skene):
         elif skene == "Pikapeli":
 
             for event in pygame.event.get():
+                korttejaPöydässä = laske_poytakortit()
+                
                 if event.type == QUIT:
                     pygame.quit()
                     sys.exit()
 
                 elif event.type == KEYDOWN:
+                                        
                     if event.key == K_ESCAPE:
                         skene = palaa_takaisin()
                         
@@ -250,15 +280,15 @@ def peli_loop(skene):
                     elif event.key == K_1 or event.key == K_2 or event.key == K_3 or event.key == K_4:
                         print()
                         valinta = valitse(event.key)
-                        if valinta <= poyta.__len__():
+                        if valinta <= korttejaPöydässä:
                             pelaa_kortti(valinta)
                                                     
                     elif event.key == K_5:
-                        if poyta.__len__() == 4 and Muuttujat.voiJuosta:
-                            karkaa_huoneesta()
-                            while poyta.__len__() < 4 and nostoPakka.__len__() > 0:
+                        if korttejaPöydässä == 4 and Muuttujat.voiJuosta:
+                            pakene_huoneesta()
+                            while korttejaPöydässä < 4 and nostoPakka.__len__() > 0:
                                 paljasta_kortti()
-                        elif poyta.__len__() == 1:
+                        elif korttejaPöydässä == 1:
                             etene()
                         else:
                             print("Et voi poistua huoneesta nyt.")
@@ -277,22 +307,24 @@ def peli_loop(skene):
                         valinta = -1
 
                     if pääIkkuna.pakene_nappi.rect.collidepoint(pygame.mouse.get_pos()):
-                        if poyta.__len__() == 4 and Muuttujat.voiJuosta:
-                            karkaa_huoneesta()
-                            while poyta.__len__() < 4 and nostoPakka.__len__() > 0:
+                        if korttejaPöydässä == 4 and Muuttujat.voiJuosta:
+                            pakene_huoneesta()
+                            while korttejaPöydässä < 4 and nostoPakka.__len__() > 0:
                                 paljasta_kortti()
                     elif pääIkkuna.etene_nappi.rect.collidepoint(pygame.mouse.get_pos()):
-                        if poyta.__len__() < 2:
+                        if korttejaPöydässä < 2:
                             etene()
 
-                    if valinta > 0 and valinta <= poyta.__len__():
-                        pelaa_kortti(valinta)
-
-            if poyta.__len__() == 4 and Muuttujat.voiJuosta:
+                    if valinta > 0 and valinta <= len(poyta):
+                        if not poyta[valinta - 1].onhaamu:
+                            pelaa_kortti(valinta)
+                            
+            korttejaPöydässä = laske_poytakortit()
+            if korttejaPöydässä == 4 and Muuttujat.voiJuosta:
                 pääIkkuna.voi_paeta = True
             else:
                 pääIkkuna.voi_paeta = False
-            if poyta.__len__() < 2:
+            if korttejaPöydässä < 2:
                 pääIkkuna.voi_edetä = True
             else:
                 pääIkkuna.voi_edetä = False

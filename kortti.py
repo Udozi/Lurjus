@@ -6,12 +6,14 @@ maat = ["pata","hertta","risti","ruutu"]
 arvot = [range(2,14)]
 
 class Kortti():
+    onhaamu = False
     maa = "pata"
     arvo = 2
 
-    def luo_kortti(self, maa, arvo):
+    def luo_kortti(self, maa, arvo, haamu = False):
         self.maa = maa
         self.arvo = arvo
+        self.onhaamu = haamu
         return
         
     def nayta(self):
@@ -41,4 +43,6 @@ class Kortti():
         self.rect = self.image.get_rect()
 
     def piirrä(self, pohja):
-        pohja.blit(self.image, self.rect)    
+         
+        if not self.onhaamu:
+            pohja.blit(self.image, self.rect)    

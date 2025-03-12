@@ -55,9 +55,10 @@ def piirrä_käden_kortit(pöytä):
         sijY = 400
         for i in range(0, len(pöytä)):
             kortti = pöytä[i]
-            kortti.image = KorttiKuvakkeet.valitse_kortin_kuvake(kortti)
-            kortti.rect.x = sijX
-            kortti.rect.y = sijY
+            if not kortti.onhaamu:
+                kortti.image = KorttiKuvakkeet.valitse_kortin_kuvake(kortti)
+                kortti.rect.x = sijX
+                kortti.rect.y = sijY
             sijX += 100
             kortti.piirrä(POHJA)
     except:
