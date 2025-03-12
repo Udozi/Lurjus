@@ -278,9 +278,8 @@ def peli_loop(skene):
                     elif event.key == K_F1:
                         aloita_peli()
                     elif event.key == K_1 or event.key == K_2 or event.key == K_3 or event.key == K_4:
-                        print()
                         valinta = valitse(event.key)
-                        if valinta <= korttejaPöydässä:
+                        if valinta <= poyta.__len__():
                             pelaa_kortti(valinta)
                                                     
                     elif event.key == K_5:
@@ -288,7 +287,7 @@ def peli_loop(skene):
                             pakene_huoneesta()
                             while korttejaPöydässä < 4 and nostoPakka.__len__() > 0:
                                 paljasta_kortti()
-                        elif korttejaPöydässä == 1:
+                        elif korttejaPöydässä < 2:
                             etene()
                         else:
                             print("Et voi poistua huoneesta nyt.")
@@ -306,28 +305,23 @@ def peli_loop(skene):
                     else:
                         valinta = -1
 
-                    if pääIkkuna.pakene_nappi.rect.collidepoint(pygame.mouse.get_pos()):
+                    if pääIkkuna.juokse_nappi.rect.collidepoint(pygame.mouse.get_pos()):
                         if korttejaPöydässä == 4 and Muuttujat.voiJuosta:
                             pakene_huoneesta()
                             while korttejaPöydässä < 4 and nostoPakka.__len__() > 0:
                                 paljasta_kortti()
-                    elif pääIkkuna.etene_nappi.rect.collidepoint(pygame.mouse.get_pos()):
-                        if korttejaPöydässä < 2:
+                        elif korttejaPöydässä < 2:
                             etene()
 
                     if valinta > 0 and valinta <= len(poyta):
                         if not poyta[valinta - 1].onhaamu:
                             pelaa_kortti(valinta)
                             
-            korttejaPöydässä = laske_poytakortit()
-            if korttejaPöydässä == 4 and Muuttujat.voiJuosta:
-                pääIkkuna.voi_paeta = True
-            else:
-                pääIkkuna.voi_paeta = False
-            if korttejaPöydässä < 2:
-                pääIkkuna.voi_edetä = True
-            else:
-                pääIkkuna.voi_edetä = False
+                    if päävalikkoon_nappi.rect.collidepoint(pygame.mouse.get_pos()):
+                        skene = palaa_takaisin()
+                    elif uusipeli_nappi.rect.collidepoint(pygame.mouse.get_pos()):
+                        skene = aloita_peli()
+                        
 
         piirra_kaikki(skene)
 
@@ -349,13 +343,29 @@ def piirra_kaikki(skene):
     elif skene == "Pikapeli":
 
         POHJA.fill((0, 0, 0))
+        pikapeli_tausta.piirrä(POHJA)
+        
         if not Muuttujat.peliOhi:
+            korttejaPöydässä = laske_poytakortit()
             piirrä_käden_kortit(poyta)
             piirrä_ase(nykyinenAse)
+            
+            if nostoPakka.__len__() > 0:
+                piirrä_nostopakka()
             
             if nykyinenAse.__len__() > 1:
                 piirrä_viimeisin_lyöty(nykyinenAse[-1])
                 
+            if poistoPakka.__len__() > 0:
+                piirrä_poistettu_kortti(poistoPakka)
+            
+            if korttejaPöydässä < 2:                
+                piirrä_juoksunappi("etene")
+            elif korttejaPöydässä == 4 and Muuttujat.voiJuosta:
+                piirrä_juoksunappi("pakene")
+            else:
+                piirrä_juoksunappi("taistele")    
+            
             piirrä_napit()
             piirrä_tekstit(nostoPakka)
         else:

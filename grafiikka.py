@@ -3,10 +3,15 @@ os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 import pygame, time 
 from pygame.locals import *
 
-class PaaValikko(pygame.sprite.Sprite):
-    def __init__(self):
+VALKOINEN = (255, 255, 255)
+PUNAINEN = (255, 0, 0)
+MUSTA = (0, 0, 0)
+
+class Taustakuva(pygame.sprite.Sprite):
+    def __init__(self, nimi = "placeholder"):
         super().__init__()
-        self.image = pygame.image.load("kuvat/menuTausta.png")
+        latausnimi = "kuvat/" + nimi + ".png"
+        self.image = pygame.image.load(latausnimi)
         self.rect = self.image.get_rect()
         self.rect.center = (400, 300)
         
@@ -20,6 +25,11 @@ class Nappi(pygame.sprite.Sprite):
         super().__init__()
         self.toiminto = toiminto
         latausnimi = "kuvat/napit/" + toiminto + "_nappi.png"
+        self.image = pygame.image.load(latausnimi)
+        self.rect = self.image.get_rect()
+        
+    def päivitä_kuva(self, nimi):
+        latausnimi = "kuvat/napit/" + str(nimi) + "_nappi.png"
         self.image = pygame.image.load(latausnimi)
         self.rect = self.image.get_rect()
 
@@ -38,8 +48,8 @@ class Teksti(pygame.sprite.Sprite):
         self.rect = self.text.get_rect()
         self.rect.center = (120, 60)
 
-    def päivitä_teksti(self, teksti):
-        self.text = pygame.font.Font("freesansbold.ttf", 16).render(teksti, True, (255, 255, 255), (0, 0, 0))
+    def päivitä_teksti(self, teksti, fonttikoko = 16, väri = VALKOINEN):
+        self.text = pygame.font.Font("freesansbold.ttf", fonttikoko).render(teksti, False, väri)
 
     def piirrä(self, surface):
         surface.blit(self.text, self.rect)
