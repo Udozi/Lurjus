@@ -280,7 +280,8 @@ def peli_loop(skene):
                     elif event.key == K_1 or event.key == K_2 or event.key == K_3 or event.key == K_4:
                         valinta = valitse(event.key)
                         if valinta <= poyta.__len__():
-                            pelaa_kortti(valinta)
+                            valitse_viholliskortin_kohde(nykyinenAse, poyta[valinta-1].arvo)
+                            valitse_kohde(valinta, poyta[valinta-1])
                                                     
                     elif event.key == K_5:
                         if korttejaPöydässä == 4 and Muuttujat.voiJuosta:
@@ -296,12 +297,20 @@ def peli_loop(skene):
                 elif event.type == MOUSEBUTTONDOWN:
                     if len(poyta) >= 4 and poyta[3].rect.collidepoint(pygame.mouse.get_pos()):
                         valinta = 4
+                        valitse_viholliskortin_kohde(nykyinenAse, poyta[valinta-1].arvo)
+                        valitse_kohde(valinta, poyta[valinta-1])
                     elif len(poyta) >= 3 and poyta[2].rect.collidepoint(pygame.mouse.get_pos()):
                         valinta = 3
+                        valitse_viholliskortin_kohde(nykyinenAse, poyta[valinta-1].arvo)
+                        valitse_kohde(valinta, poyta[valinta-1])
                     elif len(poyta) >= 2 and poyta[1].rect.collidepoint(pygame.mouse.get_pos()):
                         valinta = 2
+                        valitse_viholliskortin_kohde(nykyinenAse, poyta[valinta-1].arvo)
+                        valitse_kohde(valinta, poyta[valinta-1])
                     elif len(poyta) >= 1 and poyta[0].rect.collidepoint(pygame.mouse.get_pos()):
                         valinta = 1
+                        valitse_viholliskortin_kohde(nykyinenAse, poyta[valinta-1].arvo)
+                        valitse_kohde(valinta, poyta[valinta-1])
                     else:
                         valinta = -1
 
@@ -322,7 +331,7 @@ def peli_loop(skene):
                     elif uusipeli_nappi.rect.collidepoint(pygame.mouse.get_pos()):
                         skene = aloita_peli()
                         
-
+        siirrä_kohteeseen()
         piirra_kaikki(skene)
 
 # Täytä pohjavärillä, valitse piirettävät objektit ja päivitä ikkuna
@@ -364,7 +373,10 @@ def piirra_kaikki(skene):
             elif korttejaPöydässä == 4 and Muuttujat.voiJuosta:
                 piirrä_juoksunappi("pakene")
             else:
-                piirrä_juoksunappi("taistele")    
+                piirrä_juoksunappi("taistele")
+
+            if pääIkkuna.SiirtoAnimaatiot.piirrä_siirtyvä_kortti:
+                piirrä_siirtyvä_kortti()
             
             piirrä_napit()
             piirrä_tekstit(nostoPakka)
