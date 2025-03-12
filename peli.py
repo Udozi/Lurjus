@@ -18,14 +18,6 @@ PUNAINEN   = (255, 0, 0)
 MUSTA = (0, 0, 0)
 LÄHESVALKOINEN = (240, 230, 220)
 VALKOINEN = (255, 255, 255)
- 
-# Luodaan ikkuna
-IKKUNAN_LEVEYS = 800
-IKKUNAN_KORKEUS = 600
-PIIRTOALUSTA = pygame.display.set_mode((IKKUNAN_LEVEYS,IKKUNAN_KORKEUS))
-PIIRTOALUSTA.fill(VALKOINEN)
-pygame.display.set_caption("Scoundrel")
-pygame.display.set_icon(pygame.image.load("kuvat/smorc.png"))
 
 # Scoundrel-pelin maat:
 # Ruutu (2-10) - Ase (vähentää vihollisten tekemää vahinkoa)
@@ -193,106 +185,117 @@ def aloita_peli():
 
     peli_loop("Pikapeli")
 
-def prosessoi_tapahtumat():
-    for event in pygame.event.get():
-        if event.type == QUIT:
-            Muuttujat.kaynnissa = False
-
-        elif event.type == MOUSEBUTTONDOWN:    
-            if Muuttujat.skene == "PaaValikko":
-                if kampanja_nappi.rect.collidepoint(pygame.mouse.get_pos()):
-                    Muuttujat.skene = "Kampanja"
-                    print(Muuttujat.skene)
-                    Muuttujat.skene = "PaaValikko"
-                                    
-                elif pikapeli_nappi.rect.collidepoint(pygame.mouse.get_pos()):
-                    Muuttujat.skene = "Pikapeli"
-                    aloita_peli()
-                    print(Muuttujat.skene)
-                                    
-                elif tutoriaali_nappi.rect.collidepoint(pygame.mouse.get_pos()):
-                    Muuttujat.skene = "Tutoriaali"
-                    print(Muuttujat.skene)
-                    Muuttujat.skene = "PaaValikko"
-                                    
-                elif tekijät_nappi.rect.collidepoint(pygame.mouse.get_pos()):
-                    Muuttujat.skene = "Tekijat"
-                    print(Muuttujat.skene)
-                    Muuttujat.skene = "PaaValikko"
-                    
-                elif asetukset_nappi.rect.collidepoint(pygame.mouse.get_pos()):
-                    Muuttujat.skene = "Asetukset"
-                    print(Muuttujat.skene)
-                    Muuttujat.skene = "PaaValikko"
-                                    
-                elif lopeta_nappi.rect.collidepoint(pygame.mouse.get_pos()):
-                    print("Kiitos käynnistä!")
-                    Muuttujat.kaynnissa = False
+def palaa_takaisin():
+    skene = Muuttujat.skene
+    match skene:
+        case "Pikapeli":
+            uusiSkene = "PaaValikko"
+            Muuttujat.skene = uusiSkene
+            return(uusiSkene)
 
 # Uusi looppi (Peliä ohjataan näppäinkomennoilla)
 def peli_loop(skene):
-    while True:
+    while Muuttujat.kaynnissa:
+        
+        if skene == "PaaValikko":
+            
+            for event in pygame.event.get():
+                if event.type == QUIT:
+                    Muuttujat.kaynnissa = False
 
-        for event in pygame.event.get():
-            if event.type == QUIT:
-                pygame.quit()
-                sys.exit()
+                elif event.type == MOUSEBUTTONDOWN:    
+                    if Muuttujat.skene == "PaaValikko":
+                        if kampanja_nappi.rect.collidepoint(pygame.mouse.get_pos()):
+                            Muuttujat.skene = "Kampanja"
+                            print(Muuttujat.skene)
+                            Muuttujat.skene = "PaaValikko"
+                                            
+                        elif pikapeli_nappi.rect.collidepoint(pygame.mouse.get_pos()):
+                            Muuttujat.skene = "Pikapeli"
+                            aloita_peli()
+                            print(Muuttujat.skene)
+                                            
+                        elif tutoriaali_nappi.rect.collidepoint(pygame.mouse.get_pos()):
+                            Muuttujat.skene = "Tutoriaali"
+                            print(Muuttujat.skene)
+                            Muuttujat.skene = "PaaValikko"
+                                            
+                        elif tekijät_nappi.rect.collidepoint(pygame.mouse.get_pos()):
+                            Muuttujat.skene = "Tekijat"
+                            print(Muuttujat.skene)
+                            Muuttujat.skene = "PaaValikko"
+                            
+                        elif asetukset_nappi.rect.collidepoint(pygame.mouse.get_pos()):
+                            Muuttujat.skene = "Asetukset"
+                            print(Muuttujat.skene)
+                            Muuttujat.skene = "PaaValikko"
+                                            
+                        elif lopeta_nappi.rect.collidepoint(pygame.mouse.get_pos()):
+                            print("Kiitos käynnistä!")
+                            Muuttujat.kaynnissa = False
+        
+        elif skene == "Pikapeli":
 
-            elif event.type == KEYDOWN:
-                if event.key == K_ESCAPE:
-                    Muuttujat.skene = "PaaValikko"
-                    
-                elif event.key == K_F1:
-                    aloita_peli()
-                elif event.key == K_1 or event.key == K_2 or event.key == K_3 or event.key == K_4:
-                    print()
-                    valinta = valitse(event.key)
-                    if valinta <= poyta.__len__():
-                        pelaa_kortti(valinta)
-                                                
-                elif event.key == K_5:
-                    if poyta.__len__() == 4 and Muuttujat.voiJuosta:
-                        karkaa_huoneesta()
-                        while poyta.__len__() < 4 and nostoPakka.__len__() > 0:
-                            paljasta_kortti()
-                    elif poyta.__len__() == 1:
-                        etene()
+            for event in pygame.event.get():
+                if event.type == QUIT:
+                    pygame.quit()
+                    sys.exit()
+
+                elif event.type == KEYDOWN:
+                    if event.key == K_ESCAPE:
+                        skene = palaa_takaisin()
+                        
+                    elif event.key == K_F1:
+                        aloita_peli()
+                    elif event.key == K_1 or event.key == K_2 or event.key == K_3 or event.key == K_4:
+                        print()
+                        valinta = valitse(event.key)
+                        if valinta <= poyta.__len__():
+                            pelaa_kortti(valinta)
+                                                    
+                    elif event.key == K_5:
+                        if poyta.__len__() == 4 and Muuttujat.voiJuosta:
+                            karkaa_huoneesta()
+                            while poyta.__len__() < 4 and nostoPakka.__len__() > 0:
+                                paljasta_kortti()
+                        elif poyta.__len__() == 1:
+                            etene()
+                        else:
+                            print("Et voi poistua huoneesta nyt.")
+
+
+                elif event.type == MOUSEBUTTONDOWN:
+                    if len(poyta) >= 4 and poyta[3].rect.collidepoint(pygame.mouse.get_pos()):
+                        valinta = 4
+                    elif len(poyta) >= 3 and poyta[2].rect.collidepoint(pygame.mouse.get_pos()):
+                        valinta = 3
+                    elif len(poyta) >= 2 and poyta[1].rect.collidepoint(pygame.mouse.get_pos()):
+                        valinta = 2
+                    elif len(poyta) >= 1 and poyta[0].rect.collidepoint(pygame.mouse.get_pos()):
+                        valinta = 1
                     else:
-                        print("Et voi poistua huoneesta nyt.")
+                        valinta = -1
 
+                    if pääIkkuna.pakene_nappi.rect.collidepoint(pygame.mouse.get_pos()):
+                        if poyta.__len__() == 4 and Muuttujat.voiJuosta:
+                            karkaa_huoneesta()
+                            while poyta.__len__() < 4 and nostoPakka.__len__() > 0:
+                                paljasta_kortti()
+                    elif pääIkkuna.etene_nappi.rect.collidepoint(pygame.mouse.get_pos()):
+                        if poyta.__len__() < 2:
+                            etene()
 
-            elif event.type == MOUSEBUTTONDOWN:
-                if len(poyta) >= 4 and poyta[3].rect.collidepoint(pygame.mouse.get_pos()):
-                    valinta = 4
-                elif len(poyta) >= 3 and poyta[2].rect.collidepoint(pygame.mouse.get_pos()):
-                    valinta = 3
-                elif len(poyta) >= 2 and poyta[1].rect.collidepoint(pygame.mouse.get_pos()):
-                    valinta = 2
-                elif len(poyta) >= 1 and poyta[0].rect.collidepoint(pygame.mouse.get_pos()):
-                    valinta = 1
-                else:
-                    valinta = -1
+                    if valinta > 0 and valinta <= poyta.__len__():
+                        pelaa_kortti(valinta)
 
-                if pääIkkuna.pakene_nappi.rect.collidepoint(pygame.mouse.get_pos()):
-                    if poyta.__len__() == 4 and Muuttujat.voiJuosta:
-                        karkaa_huoneesta()
-                        while poyta.__len__() < 4 and nostoPakka.__len__() > 0:
-                            paljasta_kortti()
-                elif pääIkkuna.etene_nappi.rect.collidepoint(pygame.mouse.get_pos()):
-                    if poyta.__len__() < 2:
-                        etene()
-
-                if valinta > 0 and valinta <= poyta.__len__():
-                    pelaa_kortti(valinta)
-
-        if poyta.__len__() == 4 and Muuttujat.voiJuosta:
-            pääIkkuna.voi_paeta = True
-        else:
-            pääIkkuna.voi_paeta = False
-        if poyta.__len__() < 2:
-            pääIkkuna.voi_edetä = True
-        else:
-            pääIkkuna.voi_edetä = False
+            if poyta.__len__() == 4 and Muuttujat.voiJuosta:
+                pääIkkuna.voi_paeta = True
+            else:
+                pääIkkuna.voi_paeta = False
+            if poyta.__len__() < 2:
+                pääIkkuna.voi_edetä = True
+            else:
+                pääIkkuna.voi_edetä = False
 
         piirra_kaikki(skene)
 
@@ -301,13 +304,14 @@ def peli_loop(skene):
 def piirra_kaikki(skene):
 
     if skene == "PaaValikko":
-        paaValikko.piirrä(PIIRTOALUSTA)
-        kampanja_nappi.piirrä(PIIRTOALUSTA, 660, 480)
-        pikapeli_nappi.piirrä(PIIRTOALUSTA, 400, 480)
-        tutoriaali_nappi.piirrä(PIIRTOALUSTA, 140, 480)
-        asetukset_nappi.piirrä(PIIRTOALUSTA, 400, 565)
-        tekijät_nappi.piirrä(PIIRTOALUSTA, 140, 565)
-        lopeta_nappi.piirrä(PIIRTOALUSTA, 660, 565)
+        POHJA.fill((0,0,0))
+        paaValikko.piirrä(POHJA)
+        kampanja_nappi.piirrä(POHJA, 660, 480)
+        pikapeli_nappi.piirrä(POHJA, 400, 480)
+        tutoriaali_nappi.piirrä(POHJA, 140, 480)
+        asetukset_nappi.piirrä(POHJA, 400, 565)
+        tekijät_nappi.piirrä(POHJA, 140, 565)
+        lopeta_nappi.piirrä(POHJA, 660, 565)
         pygame.display.flip()
         
     elif skene == "Pikapeli":
@@ -332,9 +336,9 @@ def kaynnista():
     while Muuttujat.kaynnissa:
         
         piirra_kaikki(Muuttujat.skene)
-        prosessoi_tapahtumat()
+        peli_loop("PaaValikko")
      
 kaynnista()
 
 pygame.quit()
-quit()
+sys.exit()
