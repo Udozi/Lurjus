@@ -303,14 +303,14 @@ def peli_loop(skene):
                         
                     elif event.key == K_F1:
                         aloita_peli()
-                    elif event.key == K_1 or event.key == K_2 or event.key == K_3 or event.key == K_4:
+                    elif (event.key == K_1 or event.key == K_2 or event.key == K_3 or event.key == K_4) and not Muuttujat.peliOhi:
                         valinta = valitse(event.key)
 
                         if valinta <= poyta.__len__() and not poyta[valinta - 1].onhaamu:
                             valitse_viholliskortin_kohde(nykyinenAse, poyta[valinta-1])
                             valitse_kohde(valinta, poyta[valinta-1])
                                                     
-                    elif event.key == K_5:
+                    elif event.key == K_5 and not Muuttujat.peliOhi:
                         valinta = 5
                         if korttejaPöydässä == huoneenKoko and Muuttujat.voiJuosta:
                             pakene_huoneesta()
