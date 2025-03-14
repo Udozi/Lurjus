@@ -35,31 +35,50 @@ nostoPakka = []
 poistoPakka = []
 poyta = []
 nykyinenAse = []
+huoneenKoko = 4
 
 # Yhden kortin siirtäminen nostopakasta pöydälle
 def paljasta_kortti():
+
+    poista_haamukortit()
+    poydattyKortti = nostoPakka[-1]
+    SiirtoAnimaatiot.viimeisin_siirtyvä = "pöydätty"
     
-    poyta = poista_haamukortit()
-    ylinKortti = nostoPakka[-1]
-    poydattyKortti = ylinKortti
+    SiirtoAnimaatiot.pöydättävä_kortti = poydattyKortti
+    SiirtoAnimaatiot.pöydättävä_kortti_sijX = 25
+    SiirtoAnimaatiot.pöydättävä_kortti_sijY = 380
+    i = laske_poytakortit()
+    siirrä_pöytään(i)
+    
+    while SiirtoAnimaatiot.piirrä_pöydättävä_kortti:
+
+        siirrä_pöytään(i)
+        piirrä_kaikki()
+        
     nostoPakka.pop()
     poyta.append(poydattyKortti)
+
     return
 
 def hylkaa_ase():
     
+    Muuttujat.aseestaPoistoon = nykyinenAse.__len__()
     poistoPakka.extend(nykyinenAse)
     nykyinenAse.clear()
+    
     return
 
 def pelaa_kortti(i):
     
+    SiirtoAnimaatiot.piirrä_siirtyvä_kortti = False
+    SiirtoAnimaatiot.viimeisin_siirtyvä = "pelattu"
     pelattavaKortti = poyta[i-1]
+    Muuttujat.viimeksiPelattu = pelattavaKortti
     vaikutus = pelattavaKortti.vaikutus()
     haamukortti = Kortti()
     haamukortti.luo_kortti("hertta",0,True)
     poyta[i-1] = haamukortti
-    
+  
     
     # Jos pelattu kortti on ruutu (=ase)
     if type(vaikutus) is not int:
@@ -132,15 +151,16 @@ def laske_poytakortit():
 def poista_haamukortit():
     
     uusiPoyta = poyta
-    pöydänKoko = len(poyta)
     try:
-        for i in range(pöydänKoko):
+        
+        for i in range(len(poyta)):
             if poyta[i].onhaamu:
                 uusiPoyta.pop(i) 
+
     except:
-        return uusiPoyta
+        return 
           
-    return uusiPoyta
+    
 
 def pakene_huoneesta():
 
@@ -148,19 +168,13 @@ def pakene_huoneesta():
     nostoPakka[:0] = poyta
     poyta.clear()
     Muuttujat.voiJuosta = False
-    etene()
-    return
-
-def etene():  
-          
-    while laske_poytakortit() < 4 and nostoPakka.__len__() > 0:
-        paljasta_kortti()
-    
-    Muuttujat.voiParantua = True    
+    uusi_huone()
     return
 
 def peli_ohi():
 
+    SiirtoAnimaatiot.piirrä_siirtyvä_kortti = False
+    SiirtoAnimaatiot.piirrä_pöydättävä_kortti = False
     pisteet = Muuttujat.HP
     
     # Pisteiden lasku pelin hävittyä
@@ -191,6 +205,7 @@ def nollaa_peli():
     poyta.clear()
     poistoPakka.clear()
     nykyinenAse.clear()
+    nollaa_korttien_paikat()
     Muuttujat.HP = 20
     Muuttujat.peliOhi = False
     Muuttujat.voiJuosta = True
@@ -207,10 +222,20 @@ def aloita_peli():
             uusiKortti.luo_kortti(m,a + 2)
             nostoPakka.append(uusiKortti)
     random.shuffle(nostoPakka)
-    while laske_poytakortit() < 4 and nostoPakka.__len__() > 0:
-            paljasta_kortti()
-
+    uusi_huone()
     peli_loop("Pikapeli")
+
+
+def uusi_huone():
+    
+    Muuttujat.voiParantua = True
+    poista_haamukortit()
+    SiirtoAnimaatiot.piirrä_siirtyvä_kortti = False  
+    nollaa_korttien_paikat() 
+    while laske_poytakortit() < huoneenKoko and nostoPakka.__len__() > 0:
+        paljasta_kortti()
+    SiirtoAnimaatiot.piirrä_pöydättävä_kortti = False
+        
 
 def palaa_takaisin():
     skene = Muuttujat.skene
@@ -222,13 +247,13 @@ def palaa_takaisin():
 
 # Uusi looppi (Peliä ohjataan näppäinkomennoilla)
 def peli_loop(skene):
-    while Muuttujat.kaynnissa:
+    while Muuttujat.käynnissä:
         
         if skene == "PaaValikko":
             
             for event in pygame.event.get():
                 if event.type == QUIT:
-                    Muuttujat.kaynnissa = False
+                    Muuttujat.käynnissä = False
 
                 elif event.type == MOUSEBUTTONDOWN:    
                     if Muuttujat.skene == "PaaValikko":
@@ -259,7 +284,7 @@ def peli_loop(skene):
                                             
                         elif lopeta_nappi.rect.collidepoint(pygame.mouse.get_pos()):
                             print("Kiitos käynnistä!")
-                            Muuttujat.kaynnissa = False
+                            Muuttujat.käynnissä = False
         
         elif skene == "Pikapeli":
 
@@ -280,38 +305,50 @@ def peli_loop(skene):
                     elif event.key == K_1 or event.key == K_2 or event.key == K_3 or event.key == K_4:
                         valinta = valitse(event.key)
                         if valinta <= poyta.__len__():
-                            pelaa_kortti(valinta)
+                            valitse_viholliskortin_kohde(nykyinenAse, poyta[valinta-1])
+                            valitse_kohde(valinta, poyta[valinta-1])
                                                     
                     elif event.key == K_5:
-                        if korttejaPöydässä == 4 and Muuttujat.voiJuosta:
+                        valinta = 5
+                        if korttejaPöydässä == huoneenKoko and Muuttujat.voiJuosta:
                             pakene_huoneesta()
-                            while korttejaPöydässä < 4 and nostoPakka.__len__() > 0:
-                                paljasta_kortti()
+
                         elif korttejaPöydässä < 2:
-                            etene()
+                            uusi_huone()
                         else:
                             print("Et voi poistua huoneesta nyt.")
 
+                    if valinta > 0 and valinta <= len(poyta):
+                        if not poyta[valinta - 1].onhaamu:
+                            pelaa_kortti(valinta)
 
                 elif event.type == MOUSEBUTTONDOWN:
                     if len(poyta) >= 4 and poyta[3].rect.collidepoint(pygame.mouse.get_pos()):
                         valinta = 4
+                        valitse_viholliskortin_kohde(nykyinenAse, poyta[valinta-1])
+                        valitse_kohde(valinta, poyta[valinta-1])
                     elif len(poyta) >= 3 and poyta[2].rect.collidepoint(pygame.mouse.get_pos()):
                         valinta = 3
+                        valitse_viholliskortin_kohde(nykyinenAse, poyta[valinta-1])
+                        valitse_kohde(valinta, poyta[valinta-1])
                     elif len(poyta) >= 2 and poyta[1].rect.collidepoint(pygame.mouse.get_pos()):
                         valinta = 2
+                        valitse_viholliskortin_kohde(nykyinenAse, poyta[valinta-1])
+                        valitse_kohde(valinta, poyta[valinta-1])
                     elif len(poyta) >= 1 and poyta[0].rect.collidepoint(pygame.mouse.get_pos()):
                         valinta = 1
+                        valitse_viholliskortin_kohde(nykyinenAse, poyta[valinta-1])
+                        valitse_kohde(valinta, poyta[valinta-1])
                     else:
                         valinta = -1
 
                     if pääIkkuna.juokse_nappi.rect.collidepoint(pygame.mouse.get_pos()):
-                        if korttejaPöydässä == 4 and Muuttujat.voiJuosta:
+                        if korttejaPöydässä == huoneenKoko and Muuttujat.voiJuosta:
                             pakene_huoneesta()
-                            while korttejaPöydässä < 4 and nostoPakka.__len__() > 0:
-                                paljasta_kortti()
+                            
                         elif korttejaPöydässä < 2:
-                            etene()
+                            Muuttujat.voiJuosta = True
+                            uusi_huone()
 
                     if valinta > 0 and valinta <= len(poyta):
                         if not poyta[valinta - 1].onhaamu:
@@ -322,12 +359,14 @@ def peli_loop(skene):
                     elif uusipeli_nappi.rect.collidepoint(pygame.mouse.get_pos()):
                         skene = aloita_peli()
                         
-
-        piirra_kaikki(skene)
+                        
+        siirrä_kohteeseen()
+        piirrä_kaikki()
 
 # Täytä pohjavärillä, valitse piirettävät objektit ja päivitä ikkuna
 
-def piirra_kaikki(skene):
+def piirrä_kaikki():
+    skene = Muuttujat.skene
 
     if skene == "PaaValikko":
         POHJA.fill((0,0,0))
@@ -346,41 +385,72 @@ def piirra_kaikki(skene):
         pikapeli_tausta.piirrä(POHJA)
         
         if not Muuttujat.peliOhi:
+            
             korttejaPöydässä = laske_poytakortit()
             piirrä_käden_kortit(poyta)
-            piirrä_ase(nykyinenAse)
+            
+            herttaViimeisin = False
+            if len(poistoPakka) > 0:
+                if Muuttujat.viimeksiPelattu.maa == "hertta":
+                    herttaViimeisin = True
+            
+            if nykyinenAse.__len__() > 0 and (not SiirtoAnimaatiot.piirrä_siirtyvä_kortti or herttaViimeisin) or nykyinenAse.__len__() > 1:
+                piirrä_ase(nykyinenAse)
             
             if nostoPakka.__len__() > 0:
                 piirrä_nostopakka()
             
             if nykyinenAse.__len__() > 1:
-                piirrä_viimeisin_lyöty(nykyinenAse[-1])
+                i = -1
+                if nykyinenAse.__len__() > 2:
+   
+                    if SiirtoAnimaatiot.piirrä_siirtyvä_kortti and not herttaViimeisin:
+                        i -= 1
+                        
+                elif SiirtoAnimaatiot.piirrä_siirtyvä_kortti and not herttaViimeisin:
+                    i += 1
+
+                if i < 0: 
+                    # -2 = piirrä edellinen vihu
+                    # -1 = piirrä päällimmäinen
+                    # 0 = älä piirrä   
+                    piirrä_viimeisin_lyöty(nykyinenAse[i])
+
                 
             if poistoPakka.__len__() > 0:
                 piirrä_poistettu_kortti(poistoPakka)
             
             if korttejaPöydässä < 2:                
                 piirrä_juoksunappi("etene")
-            elif korttejaPöydässä == 4 and Muuttujat.voiJuosta:
+            elif korttejaPöydässä == huoneenKoko and Muuttujat.voiJuosta:
                 piirrä_juoksunappi("pakene")
             else:
-                piirrä_juoksunappi("taistele")    
-            
+                piirrä_juoksunappi("taistele")
+
             piirrä_napit()
             piirrä_tekstit(nostoPakka)
+            
+            piirrä_pöydättävä_kortti()
+            
+            if pääIkkuna.SiirtoAnimaatiot.piirrä_siirtyvä_kortti:
+                piirrä_siirtyvä_kortti()
+            else:
+                Muuttujat.aseestaPoistoon = 0
+            
+            
         else:
             peli_ohi()
         pygame.display.update()
         kello.tick(FPS)   
     
-def kaynnista():
+def käynnistä():
     
-    while Muuttujat.kaynnissa:
+    while Muuttujat.käynnissä:
         
-        piirra_kaikki(Muuttujat.skene)
+        piirrä_kaikki()
         peli_loop("PaaValikko")
      
-kaynnista()
+käynnistä()
 
 pygame.quit()
 sys.exit()

@@ -10,6 +10,7 @@ from grafiikka import *
 pygame.init()
 FPS = 60
 kello = pygame.time.Clock()
+nopeus = 20
 
 IKKUNAN_LEVEYS = 800
 IKKUNAN_KORKEUS = 600
@@ -17,18 +18,9 @@ POHJA = pygame.display.set_mode((IKKUNAN_LEVEYS, IKKUNAN_KORKEUS))
 POHJA.fill((255, 255, 255))
 pygame.display.set_caption("Lurjus")
 pygame.display.set_icon(pygame.image.load("kuvat/kortit/ruutu2.png"))
-korttien_x_sijainnit = {
-    1 : 30,
-    2 : 180,
-    3 : 310,
-    4 : 460,
-}
-korttien_y_sijainnit = {
-    1 : 400,
-    2 : 400,
-    3 : 400,
-    4 : 400,
-}
+korttien_x_sijainnit = [25, 179, 333, 487]
+korttien_y_sijainnit = [142, 142, 142, 142]
+
 #Taustoja
 paaValikko = Taustakuva("menuTausta")
 pikapeli_tausta = Taustakuva("pikapeliTausta")
@@ -53,18 +45,21 @@ f1_teksti = Teksti()
 
 def piirrä_käden_kortit(pöytä):
     try:
-        sijX = 25
-        sijY = 142
-        for i in range(0, len(pöytä)):
+        pöydässäKortteja = len(pöytä)
+        if pöytä[-1].onhaamu and pöydässäKortteja > 1:
+            SiirtoAnimaatiot.piirrä_pöydättävä_kortti = False
+        
+        for i in range(0, pöydässäKortteja):
             kortti = pöytä[i]
+
             if not kortti.onhaamu:
                 kortti.image = KorttiKuvakkeet.valitse_kortin_kuvake(kortti)
-                kortti.rect.x = sijX
-                kortti.rect.y = sijY
-            sijX += 154
-            kortti.piirrä(POHJA)
+                kortti.rect.x = korttien_x_sijainnit[i]
+                kortti.rect.y = korttien_y_sijainnit[i]
+                kortti.piirrä(POHJA)
     except:
         return
+
 
 def piirrä_nostopakka():
     try:
@@ -77,10 +72,27 @@ def piirrä_nostopakka():
 
 def piirrä_poistettu_kortti(poistoPakka):
     try:
-        ylinKortti = poistoPakka[-1]
+        i = 1
+        
+        if not SiirtoAnimaatiot.piirrä_pöydättävä_kortti:
+        
+            if SiirtoAnimaatiot.piirrä_siirtyvä_kortti and Muuttujat.aseestaPoistoon > 0:
+                i = Muuttujat.aseestaPoistoon + 1
+                
+            elif SiirtoAnimaatiot.piirrä_siirtyvä_kortti and not SiirtoAnimaatiot.lisää_aseen_päälle and SiirtoAnimaatiot.siirtyvä_kortti.maa != "ruutu":
+                i = 2      
+
+        if i > len(poistoPakka): i = len(poistoPakka)
+        
+        ylinKortti = poistoPakka[-i]
         sijX = 640
         sijY = 355
-        ylinKortti.image = KorttiKuvakkeet.valitse_kortin_kuvake(ylinKortti)
+        
+        if ylinKortti.maa == "ruutu":
+            ylinKortti.image = KorttiKuvakkeet.valitse_aseen_kuvake(ylinKortti)
+        else:
+            ylinKortti.image = KorttiKuvakkeet.valitse_kortin_kuvake(ylinKortti)
+            
         ylinKortti.rect.x = sijX
         ylinKortti.rect.y = sijY
         ylinKortti.piirrä(POHJA)
@@ -164,7 +176,176 @@ def piirrä_pisteet(pisteet):
     f1_teksti.päivitä_teksti("F1 = Aloita uusi peli")
     f1_teksti.piirrä(POHJA)
     piirrä_napit()
+
+def valitse_viholliskortin_kohde(nykyinenAse, pelattu_kortti):
+    if nykyinenAse.__len__() > 0 and nykyinenAse[0].kestavyys > pelattu_kortti.arvo and (pelattu_kortti.maa == "pata" or pelattu_kortti.maa == "risti"):
+        SiirtoAnimaatiot.lisää_aseen_päälle = True
+    else:
+        SiirtoAnimaatiot.lisää_aseen_päälle = False
+
+# Valitse kohdekoordinaatit, johon korttia aletaan siirtämään
+# Asekortin koordinaatit: 650, 100
+# Potionit ja nyrkillä tapetut viholliset: 100, -100 (piirtoalueen ulkopuolella)
+def valitse_kohde(valinta, pelattu_kortti):
+    kohdeX = 0
+    kohdeY = 0
+    match pelattu_kortti.maa:
+        case "ruutu":
+            kohdeX = 450
+            kohdeY = 355
+        case "pata":
+            if SiirtoAnimaatiot.lisää_aseen_päälle:
+                kohdeX = 490
+                kohdeY = 395
+            else:
+                kohdeX = 640
+                kohdeY = 355
+        case "risti":
+            if SiirtoAnimaatiot.lisää_aseen_päälle:
+                kohdeX = 490
+                kohdeY = 395
+            else:
+                kohdeX = 640
+                kohdeY = 355
+        case "hertta":
+            kohdeX = 200
+            kohdeY = 415
     
+    SiirtoAnimaatiot.siirtyvä_kortti = pelattu_kortti
+    SiirtoAnimaatiot.viimeisin_pelattu = valinta
+    SiirtoAnimaatiot.siirtyvä_kortti_sijX = korttien_x_sijainnit[valinta-1]
+    SiirtoAnimaatiot.siirtyvä_kortti_sijY = korttien_y_sijainnit[valinta-1]
+    SiirtoAnimaatiot.siirtyvä_kortti_kohdeX = kohdeX
+    SiirtoAnimaatiot.siirtyvä_kortti_kohdeY = kohdeY
+
+# Siirrä kortin sijaintia joka framessa n pikseliä kohti kohdekoordinatteja
+def siirrä_kohteeseen():
+
+    # Tarkista, mikä siirtymä on käynnissä
+    
+    match SiirtoAnimaatiot.viimeisin_siirtyvä:
+        case "pelattu":
+            
+            sijX = SiirtoAnimaatiot.siirtyvä_kortti_sijX
+            sijY = SiirtoAnimaatiot.siirtyvä_kortti_sijY
+            kohdeX = SiirtoAnimaatiot.siirtyvä_kortti_kohdeX
+            kohdeY = SiirtoAnimaatiot.siirtyvä_kortti_kohdeY
+            muutosX = sijX - kohdeX
+            muutosY = sijY - kohdeY
+            hypotenuusa = (muutosX**2 + muutosY**2)**(1/2)
+
+            if hypotenuusa != 0:
+                sijX -= nopeus * muutosX / hypotenuusa
+                sijY -= nopeus * muutosY / hypotenuusa
+
+            if abs(kohdeX - sijX) < nopeus:
+                sijX = kohdeX
+            if abs(kohdeY - sijY) < nopeus:
+                sijY = kohdeY
+                
+            SiirtoAnimaatiot.siirtyvä_kortti_sijX = sijX
+            SiirtoAnimaatiot.siirtyvä_kortti_sijY = sijY
+            
+            if not (SiirtoAnimaatiot.siirtyvä_kortti_sijX == kohdeX and SiirtoAnimaatiot.siirtyvä_kortti_sijY == kohdeY):
+                SiirtoAnimaatiot.piirrä_siirtyvä_kortti = True
+            else:
+                SiirtoAnimaatiot.piirrä_siirtyvä_kortti = False
+                
+        case "pöydätty":
+            
+            sijX = SiirtoAnimaatiot.pöydättävä_kortti_sijX
+            sijY = SiirtoAnimaatiot.siirtyvä_kortti_sijY
+            kohdeX = SiirtoAnimaatiot.siirtyvä_kortti_kohdeX
+            kohdeY = SiirtoAnimaatiot.siirtyvä_kortti_kohdeY
+            muutosX = sijX - kohdeX
+            muutosY = sijY - kohdeY
+            hypotenuusa = (muutosX**2 + muutosY**2)**(1/2)
+
+            if hypotenuusa != 0:
+                sijX -= nopeus * muutosX / hypotenuusa
+                sijY -= nopeus * muutosY / hypotenuusa
+
+            if abs(kohdeX - sijX) < nopeus:
+                sijX = kohdeX
+            if abs(kohdeY - sijY) < nopeus:
+                sijY = kohdeY
+                
+            SiirtoAnimaatiot.siirtyvä_kortti_sijX = sijX
+            SiirtoAnimaatiot.siirtyvä_kortti_sijY = sijY
+            
+            if not (SiirtoAnimaatiot.siirtyvä_kortti_sijX == kohdeX and SiirtoAnimaatiot.siirtyvä_kortti_sijY == kohdeY):
+                SiirtoAnimaatiot.piirrä_pöydättävä_kortti = True
+            else:
+                SiirtoAnimaatiot.piirrä_pöydättävä_kortti = False
+
+def siirrä_pöytään(n):
+    sijX = SiirtoAnimaatiot.pöydättävä_kortti_sijX
+    sijY = SiirtoAnimaatiot.pöydättävä_kortti_sijY
+    kohdeX = 25 + 154 * n
+    kohdeY = 142
+    muutosX = sijX - kohdeX
+    muutosY = sijY - kohdeY
+    hypotenuusa = (muutosX**2 + muutosY**2)**(1/2)
+
+    if hypotenuusa != 0:
+        sijX -= nopeus * muutosX / hypotenuusa
+        sijY -= nopeus * muutosY / hypotenuusa
+
+    if abs(kohdeX - sijX) < nopeus:
+        sijX = kohdeX
+    if abs(kohdeY - sijY) < nopeus:
+        sijY = kohdeY
+        
+    SiirtoAnimaatiot.pöydättävä_kortti_sijX = sijX
+    SiirtoAnimaatiot.pöydättävä_kortti_sijY = sijY
+    
+    # Tarkista onko siirtymä käynnissä
+    if not (sijX == kohdeX and sijY == kohdeY):
+        SiirtoAnimaatiot.piirrä_pöydättävä_kortti = True
+    else:
+        SiirtoAnimaatiot.piirrä_pöydättävä_kortti = False
+
+
+# Piirretään siirtymän ajan ylimääräinen "haamukortti"
+def piirrä_siirtyvä_kortti():
+    if SiirtoAnimaatiot.piirrä_siirtyvä_kortti:
+
+        try:
+            kortti = SiirtoAnimaatiot.siirtyvä_kortti
+            SiirtoAnimaatiot.siirtyvä_kortti.image = KorttiKuvakkeet.valitse_kortin_kuvake(kortti)
+            SiirtoAnimaatiot.siirtyvä_kortti.rect.x = SiirtoAnimaatiot.siirtyvä_kortti_sijX
+            SiirtoAnimaatiot.siirtyvä_kortti.rect.y = SiirtoAnimaatiot.siirtyvä_kortti_sijY
+            SiirtoAnimaatiot.siirtyvä_kortti.piirrä(POHJA)
+        except:
+            return
+
+# Piirretään pöytäyksen ajan ylimääräinen "haamukortti"    
+def piirrä_pöydättävä_kortti():
+    if SiirtoAnimaatiot.piirrä_pöydättävä_kortti:
+        try:
+            kortti = SiirtoAnimaatiot.pöydättävä_kortti
+            SiirtoAnimaatiot.pöydättävä_kortti.image = KorttiKuvakkeet.valitse_kortin_kuvake(kortti)
+            SiirtoAnimaatiot.pöydättävä_kortti.rect.x = SiirtoAnimaatiot.pöydättävä_kortti_sijX
+            SiirtoAnimaatiot.pöydättävä_kortti.rect.y = SiirtoAnimaatiot.pöydättävä_kortti_sijY
+            SiirtoAnimaatiot.pöydättävä_kortti.piirrä(POHJA)
+        except:
+            return
+
+def nollaa_korttien_paikat():
+    SiirtoAnimaatiot.pöydättävä_kortti_sijX = SiirtoAnimaatiot.pöydättävä_kortti_oletusarvot[0]
+    SiirtoAnimaatiot.pöydättävä_kortti_sijY = SiirtoAnimaatiot.pöydättävä_kortti_oletusarvot[1]
+    SiirtoAnimaatiot.pöydättävä_kortti_kohdeX = SiirtoAnimaatiot.pöydättävä_kortti_oletusarvot[2]
+    SiirtoAnimaatiot.pöydättävä_kortti_kohdeY = SiirtoAnimaatiot.pöydättävä_kortti_oletusarvot[3]
+
+    SiirtoAnimaatiot.siirtyvä_kortti_sijX = SiirtoAnimaatiot.siirtyvä_kortti_oletusarvot[0]
+    SiirtoAnimaatiot.siirtyvä_kortti_sijY = SiirtoAnimaatiot.siirtyvä_kortti_oletusarvot[1]
+    SiirtoAnimaatiot.siirtyvä_kortti_kohdeX = SiirtoAnimaatiot.siirtyvä_kortti_oletusarvot[2]
+    SiirtoAnimaatiot.siirtyvä_kortti_kohdeY = SiirtoAnimaatiot.siirtyvä_kortti_oletusarvot[3]
+    
+    SiirtoAnimaatiot.piirrä_siirtyvä_kortti = False
+    SiirtoAnimaatiot.piirrä_pöydättävä_kortti = False
+    SiirtoAnimaatiot.piirrä_siirtyvä_asepino = False
+
 
 class KorttiKuvakkeet:
 
@@ -182,4 +363,27 @@ class KorttiKuvakkeet:
             return kuvake
         except:
             return
+
+class SiirtoAnimaatiot:
+
+    siirtyvä_kortti = Kortti()
+    pöydättävä_kortti = Kortti()
+    viimeisin_pelattu = 0
+    viimeisin_siirtyvä = "pöydätty"
+    piirrä_siirtyvä_kortti = False
+    piirrä_pöydättävä_kortti = False
+    piirrä_siirtyvä_asepino = False
+    piirrä_liikettä = piirrä_siirtyvä_kortti or piirrä_pöydättävä_kortti or piirrä_siirtyvä_asepino
+    lisää_aseen_päälle = False
     
+    pöydättävä_kortti_oletusarvot = [25, 355, 475, 142]
+    pöydättävä_kortti_sijX = pöydättävä_kortti_oletusarvot[0]
+    pöydättävä_kortti_sijY = pöydättävä_kortti_oletusarvot[1]
+    pöydättävä_kortti_kohdeX = pöydättävä_kortti_oletusarvot[2]
+    pöydättävä_kortti_kohdeY = pöydättävä_kortti_oletusarvot[3]
+    
+    siirtyvä_kortti_oletusarvot = [0, 0, 0, 0]
+    siirtyvä_kortti_sijX = siirtyvä_kortti_oletusarvot[0]
+    siirtyvä_kortti_sijY = siirtyvä_kortti_oletusarvot[1]
+    siirtyvä_kortti_kohdeX = siirtyvä_kortti_oletusarvot[2]
+    siirtyvä_kortti_kohdeY = siirtyvä_kortti_oletusarvot[3]

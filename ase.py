@@ -2,7 +2,9 @@ import pygame
 
 class Ase():
     voima = 2
+    arvo = voima
     kestavyys = 15
+    maa = "ruutu"
    
     def poimi(self, arvo):
        self.voima = arvo

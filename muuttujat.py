@@ -1,7 +1,9 @@
 class Muuttujat():
-    kaynnissa = True
+    käynnissä = True
     peliOhi = False
     HP = 20
     voiJuosta = True
     voiParantua = True
     skene = "PaaValikko"
+    aseestaPoistoon = 0
+    viimeksiPelattu = None
