@@ -24,10 +24,11 @@ korttien_y_sijainnit = [142, 142, 142, 142]
 #Taustoja
 paaValikko = Taustakuva("menuTausta")
 pikapeli_tausta = Taustakuva("pikapeliTausta")
+opastus_tausta = Taustakuva("opastusTausta")
 #Päävalikon napit
 kampanja_nappi = Nappi("kampanja")
 pikapeli_nappi = Nappi("pikapeli")
-tutoriaali_nappi = Nappi("tutoriaali")
+opastus_nappi = Nappi("opastus")
 asetukset_nappi = Nappi("asetukset")
 tekijät_nappi = Nappi("tekijät")
 lopeta_nappi = Nappi("lopeta")
@@ -42,6 +43,8 @@ pakka_tausta = Teksti()
 pakka_teksti = Teksti()
 pisteet_teksti = Pisteet()
 f1_teksti = Teksti()
+opastus_tekstirivi1 = Teksti()
+opastus_tekstirivi2 = Teksti()
 
 def piirrä_käden_kortit(pöytä):
     try:
@@ -146,18 +149,61 @@ def piirrä_napit():
     
 
 def piirrä_tekstit(pakka):
-    hp_tausta.rect.center = (340, 415)
-    hp_tausta.päivitä_teksti(str(Muuttujat.HP), 76, MUSTA)
+    hp_tausta.rect.center = (350, 415)
+    hp_tausta.päivitä_teksti(str(Muuttujat.HP), 92, MUSTA)
     hp_tausta.piirrä(POHJA)
-    hp_teksti.rect.center = (340, 415)
-    hp_teksti.päivitä_teksti(str(Muuttujat.HP), 72, VALKOINEN)
+    hp_teksti.rect.center = (350, 415)
+    hp_teksti.päivitä_teksti(str(Muuttujat.HP), 88, VALKOINEN)
     hp_teksti.piirrä(POHJA)
-    pakka_tausta.rect.center = (165, 415)
-    pakka_tausta.päivitä_teksti(str(len(pakka)), 76, MUSTA)
+    pakka_tausta.rect.center = (175, 415)
+    pakka_tausta.päivitä_teksti(str(len(pakka)), 92, MUSTA)
     pakka_tausta.piirrä(POHJA)
-    pakka_teksti.rect.center = (165, 415)
-    pakka_teksti.päivitä_teksti(str(len(pakka)), 72, VALKOINEN)
+    pakka_teksti.rect.center = (175, 415)
+    pakka_teksti.päivitä_teksti(str(len(pakka)), 88, VALKOINEN)
     pakka_teksti.piirrä(POHJA)
+    
+    if Muuttujat.skene == "Opastus":
+        opastus_tekstirivi1.rect.center = (330, 25)
+        opastus_tekstirivi2.rect.center = (330, 55)
+        opastusFontti = "Dubai"
+        opastusFonttiKoko = 20
+
+        match Muuttujat.huoneNumero:
+            case 0:
+                opastus_tekstirivi1.päivitä_teksti("Tervetuloa lyhyelle opastuskierrokselle!", fonttikoko=opastusFonttiKoko, fontti=opastusFontti) 
+                opastus_tekstirivi2.päivitä_teksti("Paina 'Etene' jatkaaksesi.", fonttikoko=opastusFonttiKoko, fontti=opastusFontti)
+            case 1: 
+                opastus_tekstirivi1.päivitä_teksti("Padat ja ristit (viholliset) tekevät sinuun vahinkoa.", fonttikoko=opastusFonttiKoko, fontti=opastusFontti) 
+                opastus_tekstirivi2.päivitä_teksti("Hertat (taikajuoma) palauttavat terveyspisteitäsi.", fonttikoko=opastusFonttiKoko, fontti=opastusFontti)
+            case 2:
+                opastus_tekstirivi1.päivitä_teksti("Voit paeta täydestä huoneesta, mutta et kahdesti peräkkäin.", fonttikoko=17, fontti=opastusFontti) 
+                opastus_tekstirivi2.päivitä_teksti("Kortit sekoitetaan ja siirretään nostopinon pohjalle.", fonttikoko=opastusFonttiKoko, fontti=opastusFontti)
+            case 3: 
+                opastus_tekstirivi1.päivitä_teksti("Ruudut (aseet) vähentävät ottamaasi vahinkoa.", fonttikoko=opastusFonttiKoko, fontti=opastusFontti) 
+                opastus_tekstirivi2.päivitä_teksti("Kun poimit aseen, edellinen siirtyy poistopakkaan.", fonttikoko=opastusFonttiKoko, fontti=opastusFontti)
+            case 4:
+                opastus_tekstirivi1.päivitä_teksti("Voit käyttää asetta vain vihollisiin, joiden suuruus", fonttikoko=opastusFonttiKoko, fontti=opastusFontti) 
+                opastus_tekstirivi2.päivitä_teksti("on pienempi kuin aseella viimeksi lyöty vihollinen.", fonttikoko=opastusFonttiKoko, fontti=opastusFontti)
+            case 5: 
+                opastus_tekstirivi1.päivitä_teksti("Seuraavaan huoneeseen voi edetä, kun nykyisessä ", fonttikoko=opastusFonttiKoko, fontti=opastusFontti) 
+                opastus_tekstirivi2.päivitä_teksti("huoneessa on alle kaksi korttia jäljellä.", fonttikoko=opastusFonttiKoko, fontti=opastusFontti)
+            case 6: 
+                opastus_tekstirivi1.päivitä_teksti("Voit saada terveyttä vain yhdestä huoneessa pelatusta", fonttikoko=19, fontti=opastusFontti) 
+                opastus_tekstirivi2.päivitä_teksti("hertasta. Seuraavassa huoneessa voit parantua lisää.", fonttikoko=opastusFonttiKoko, fontti=opastusFontti)
+            case 7: 
+                opastus_tekstirivi1.päivitä_teksti("Peli päättyy, kun sekä nostopino että huone ovat tyhjät...", fonttikoko=18, fontti=opastusFontti) 
+                opastus_tekstirivi2.päivitä_teksti("...tai kun terveyspisteesi loppuvat.", fonttikoko=opastusFonttiKoko, fontti=opastusFontti)
+            case 8: 
+                opastus_tekstirivi1.päivitä_teksti("Peli päättyy, kun sekä nostopino että huone ovat tyhjät...", fonttikoko=18, fontti=opastusFontti) 
+                opastus_tekstirivi2.päivitä_teksti("...tai kun terveyspisteesi loppuvat..", fonttikoko=opastusFonttiKoko, fontti=opastusFontti)
+            case 9: 
+                opastus_tekstirivi1.päivitä_teksti("Peli päättyy, kun sekä nostopino että huone ovat tyhjät...", fonttikoko=18, fontti=opastusFontti) 
+                opastus_tekstirivi2.päivitä_teksti("...tai kun terveyspisteesi loppuvat...", fonttikoko=opastusFonttiKoko, fontti=opastusFontti)
+            case 10: 
+                opastus_tekstirivi1.päivitä_teksti("Psst! Voit saada tulokseksi jopa 30 pistettä voittamalla pelin", fonttikoko=17, fontti=opastusFontti) 
+                opastus_tekstirivi2.päivitä_teksti("täysillä terveyspisteillä ja juomalla lopuksi ison taikajuoman!", fonttikoko=17, fontti=opastusFontti)
+        opastus_tekstirivi1.piirrä(POHJA)
+        opastus_tekstirivi2.piirrä(POHJA)
     
 
 def valitse(näppäin):
@@ -172,8 +218,8 @@ def piirrä_pisteet(pisteet):
     pisteet_teksti.päivitä_teksti("Peli ohi! Pisteesi: " + str(pisteet))
     pisteet_teksti.piirrä(POHJA)
     
-    f1_teksti.rect.center = (450, 350)
-    f1_teksti.päivitä_teksti("F1 = Aloita uusi peli")
+    f1_teksti.rect.center = (300, 350)
+    f1_teksti.päivitä_teksti("F1 = Aloita uusi peli - ESC = Palaa päävalikkoon", 24)
     f1_teksti.piirrä(POHJA)
     piirrä_napit()
 

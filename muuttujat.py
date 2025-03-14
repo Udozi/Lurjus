@@ -7,3 +7,5 @@ class Muuttujat():
     skene = "PaaValikko"
     aseestaPoistoon = 0
     viimeksiPelattu = None
+    huoneNumero = 1
+    opastusTauko = False

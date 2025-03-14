@@ -48,8 +48,8 @@ class Teksti(pygame.sprite.Sprite):
         self.rect = self.text.get_rect()
         self.rect.center = (120, 60)
 
-    def päivitä_teksti(self, teksti, fonttikoko = 16, väri = VALKOINEN):
-        self.text = pygame.font.Font("freesansbold.ttf", fonttikoko).render(teksti, False, väri)
+    def päivitä_teksti(self, teksti, fonttikoko = 16, väri = VALKOINEN, fontti = "freesansbold.ttf"):
+        self.text = pygame.font.SysFont(fontti, fonttikoko).render(teksti, False, väri)
 
     def piirrä(self, surface):
         surface.blit(self.text, self.rect)
