@@ -174,7 +174,7 @@ def piirrä_tekstit(pakka):
                 opastus_tekstirivi2.päivitä_teksti("Paina 'Etene' jatkaaksesi.", fonttikoko=opastusFonttiKoko, fontti=opastusFontti)
             case 1: 
                 opastus_tekstirivi1.päivitä_teksti("Padat ja ristit (viholliset) tekevät sinuun vahinkoa.", fonttikoko=opastusFonttiKoko, fontti=opastusFontti) 
-                opastus_tekstirivi2.päivitä_teksti("Hertat (taikajuoma) palauttavat terveyspisteitäsi.", fonttikoko=opastusFonttiKoko, fontti=opastusFontti)
+                opastus_tekstirivi2.päivitä_teksti("Hertat (taikajuomat) palauttavat terveyspisteitäsi.", fonttikoko=opastusFonttiKoko, fontti=opastusFontti)
             case 2:
                 opastus_tekstirivi1.päivitä_teksti("Voit paeta täydestä huoneesta, mutta et kahdesti peräkkäin.", fonttikoko=17, fontti=opastusFontti) 
                 opastus_tekstirivi2.päivitä_teksti("Kortit sekoitetaan ja siirretään nostopinon pohjalle.", fonttikoko=opastusFonttiKoko, fontti=opastusFontti)
