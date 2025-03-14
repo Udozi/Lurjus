@@ -296,6 +296,7 @@ def peli_loop(skene):
                     sys.exit()
 
                 elif event.type == KEYDOWN:
+                    valinta = 0
                                         
                     if event.key == K_ESCAPE:
                         skene = palaa_takaisin()
@@ -304,7 +305,8 @@ def peli_loop(skene):
                         aloita_peli()
                     elif event.key == K_1 or event.key == K_2 or event.key == K_3 or event.key == K_4:
                         valinta = valitse(event.key)
-                        if valinta <= poyta.__len__():
+
+                        if valinta <= poyta.__len__() and not poyta[valinta - 1].onhaamu:
                             valitse_viholliskortin_kohde(nykyinenAse, poyta[valinta-1])
                             valitse_kohde(valinta, poyta[valinta-1])
                                                     
