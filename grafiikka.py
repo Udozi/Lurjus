@@ -48,8 +48,8 @@ class Teksti(pygame.sprite.Sprite):
         self.rect = self.text.get_rect()
         self.rect.center = (120, 60)
 
-    def päivitä_teksti(self, teksti, fonttikoko = 16, väri = VALKOINEN):
-        self.text = pygame.font.Font("freesansbold.ttf", fonttikoko).render(teksti, False, väri)
+    def päivitä_teksti(self, teksti, fonttikoko = 16, väri = VALKOINEN, fontti = "freesansbold.ttf"):
+        self.text = pygame.font.SysFont(fontti, fonttikoko).render(teksti, False, väri)
 
     def piirrä(self, surface):
         surface.blit(self.text, self.rect)
@@ -66,4 +66,22 @@ class Pisteet(pygame.sprite.Sprite):
         self.text = pygame.font.Font("freesansbold.ttf", 40).render(teksti, True, (255, 255, 255), (0, 0, 0))
 
     def piirrä(self, surface):
-        surface.blit(self.text, self.rect)            
+        surface.blit(self.text, self.rect)
+
+class Kehys(pygame.sprite.Sprite):
+    def __init__(self, nimi = "kortti"):
+        super().__init__()
+        self.image = pygame.image.load("kuvat/efektit/hover_" + nimi + ".png")
+        self.rect = self.image.get_rect()
+        self.rect.center = (120, 60)
+        self.nimi = nimi
+
+    def piirrä(self, pohja, xpos, ypos):
+        if xpos != None and ypos != None:
+            if self.nimi.startswith("valikko"):
+                self.rect.center = (xpos, ypos)
+            else:
+                self.rect.x = xpos
+                self.rect.y = ypos
+        
+        pohja.blit(self.image, self.rect)

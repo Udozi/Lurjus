@@ -36,8 +36,11 @@ class Kortti():
             uusiAse = Ase()
             return(uusiAse.poimi(self.arvo))
         
-    def __init__(self):
+    def __init__(self, määrättyMaa=maa, määrättyArvo=arvo, haamu = False):
         super().__init__()
+        self.maa = määrättyMaa
+        self.arvo = määrättyArvo
+        self.onhaamu = haamu
         self.image = pygame.image.load("kuvat/kortit/kortti_selkä.png")
         self.originalImage = self.image
         self.rect = self.image.get_rect()
