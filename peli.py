@@ -235,10 +235,10 @@ def aloita_peli():
         # Pelaaja käy läpi käsikirjoitetun opastuskierroksen
         
         huone0 = [Kortti("hertta", 8, True), Kortti("hertta", 7, True), Kortti("hertta", 6, True), Kortti("hertta", 5, True)] # Tyhjä haamuhuone opastuksen alkuun
-        huone1 = [Kortti("pata",2),Kortti("risti",3),Kortti("pata",4),Kortti("hertta",9)]       # Vihut ja parantavat juomat -6
+        huone1 = [Kortti("pata",2),Kortti("risti",3),Kortti("pata",4),Kortti("hertta",9)]       # Vihut ja parantavat juomat
         huone2 = [Kortti("pata",11),Kortti("risti",12),Kortti("pata",13),Kortti("risti",14)]    # Pakeneminen
-        huone3 = [Kortti("ruutu",2),Kortti("ruutu",3),Kortti("ruutu",4),Kortti("pata",5),]      # Ase -1
-        huone4 = [Kortti("ruutu",5),Kortti("pata",9),Kortti("pata",8),Kortti("pata",7)]         # Ase -9
+        huone3 = [Kortti("ruutu",2),Kortti("ruutu",3),Kortti("ruutu",4),Kortti("pata",5),]      # Aseen vaihtaminen
+        huone4 = [Kortti("ruutu",5),Kortti("pata",9),Kortti("pata",8),Kortti("pata",7)]         # Aseella lyöminen
         huone5 = [Kortti("pata",10),Kortti("risti",2),Kortti("ruutu",10),Kortti("pata",3)]      # Aseen vaihto (ja käsin taistelu) - Nyt saa edetä
         huone6 = [Kortti("hertta",10),Kortti("hertta",3),Kortti("ruutu",9),Kortti("hertta",2)]  # Vain yksi parantuminen/huone
         opastus_tyrmä = [huone6, huone5, huone4, huone3, huone2, huone1, huone0]
@@ -284,6 +284,10 @@ def palaa_takaisin():
         case "Opastus":
             uusiSkene = "PaaValikko"
             Muuttujat.skene = uusiSkene
+            
+        case "Tekijät":
+            uusiSkene = "PaaValikko"
+            Muuttujat.skene = uusiSkene
 
 
 # Uusi looppi (Peliä ohjataan näppäinkomennoilla)
@@ -312,9 +316,9 @@ def peli_loop():
                         aloita_peli()
                                         
                     elif tekijät_nappi.rect.collidepoint(pygame.mouse.get_pos()):
-                        Muuttujat.skene = "Tekijat"
-                        print(Muuttujat.skene)
-                        Muuttujat.skene = "PaaValikko"
+                        Muuttujat.skene = "Tekijät"
+                        while Muuttujat.skene == "Tekijät":
+                            peli_loop()
                         
                     elif asetukset_nappi.rect.collidepoint(pygame.mouse.get_pos()):
                         Muuttujat.skene = "Asetukset"
@@ -402,7 +406,23 @@ def peli_loop():
                         aloita_peli()
             
             siirrä_kohteeseen()
+            
+        elif Muuttujat.skene == "Tekijät":
 
+            for event in pygame.event.get():
+                
+                if event.type == QUIT:
+                    pygame.quit()
+                    sys.exit()
+
+                elif event.type == KEYDOWN:
+                    if event.key == K_ESCAPE:
+                        palaa_takaisin()
+                        
+                elif event.type == MOUSEBUTTONDOWN:
+                    if päävalikkoon_nappi.rect.collidepoint(pygame.mouse.get_pos()):
+                        palaa_takaisin()
+                    
         piirrä_kaikki()
 
 # Täytä pohjavärillä, valitse piirettävät objektit ja päivitä ikkuna
@@ -419,7 +439,6 @@ def piirrä_kaikki():
         asetukset_nappi.piirrä(POHJA, 400, 565)
         tekijät_nappi.piirrä(POHJA, 140, 565)
         lopeta_nappi.piirrä(POHJA, 660, 565)
-        pygame.display.flip()
         
     elif skene == "Pikapeli" or skene == "Opastus":
 
@@ -470,7 +489,7 @@ def piirrä_kaikki():
             else:
                 piirrä_juoksunappi("taistele")
 
-            piirrä_napit()
+            piirrä_napit(2)
             piirrä_tekstit(nostoPakka)
             
             piirrä_pöydättävä_kortti()
@@ -481,9 +500,15 @@ def piirrä_kaikki():
                 Muuttujat.aseestaPoistoon = 0
     
         else:
-            peli_ohi()
-        pygame.display.update()
-        kello.tick(FPS)   
+            peli_ohi()  
+        
+    elif skene == "Tekijät":
+        POHJA.fill((0, 0, 0))
+        tekijät_tausta.piirrä(POHJA)
+        piirrä_napit(1)
+    
+    pygame.display.update()
+    kello.tick(FPS) 
     
 def käynnistä():
     

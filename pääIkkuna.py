@@ -25,6 +25,7 @@ korttien_y_sijainnit = [142, 142, 142, 142]
 paaValikko = Taustakuva("menuTausta")
 pikapeli_tausta = Taustakuva("pikapeliTausta")
 opastus_tausta = Taustakuva("opastusTausta")
+tekijät_tausta = Taustakuva("tekijätTausta")
 #Päävalikon napit
 kampanja_nappi = Nappi("kampanja")
 pikapeli_nappi = Nappi("pikapeli")
@@ -135,12 +136,15 @@ def piirrä_juoksunappi(toiminto):
     juokse_nappi.rect.y = sijY
     juokse_nappi.piirrä(POHJA)
 
-def piirrä_napit():
-    sijX = 668
-    sijY = 22
-    uusipeli_nappi.rect.x = sijX
-    uusipeli_nappi.rect.y = sijY
-    uusipeli_nappi.piirrä(POHJA)
+def piirrä_napit(n = 1):
+    
+    if n > 1:
+        sijX = 668
+        sijY = 22
+        uusipeli_nappi.rect.x = sijX
+        uusipeli_nappi.rect.y = sijY
+        uusipeli_nappi.piirrä(POHJA)
+    
     sijX = 734
     sijY = 22
     päävalikkoon_nappi.rect.x = sijX
@@ -170,8 +174,8 @@ def piirrä_tekstit(pakka):
 
         match Muuttujat.huoneNumero:
             case 0:
-                opastus_tekstirivi1.päivitä_teksti("Tervetuloa lyhyelle opastuskierrokselle!", fonttikoko=opastusFonttiKoko, fontti=opastusFontti) 
-                opastus_tekstirivi2.päivitä_teksti("Paina 'Etene' jatkaaksesi.", fonttikoko=opastusFonttiKoko, fontti=opastusFontti)
+                opastus_tekstirivi1.päivitä_teksti("Tervetuloa opastuskierrokselle! Pelaa kortteja", fonttikoko=opastusFonttiKoko, fontti=opastusFontti) 
+                opastus_tekstirivi2.päivitä_teksti("painamalla niitä. Paina 'Etene' jatkaaksesi.", fonttikoko=opastusFonttiKoko, fontti=opastusFontti)
             case 1: 
                 opastus_tekstirivi1.päivitä_teksti("Padat ja ristit (viholliset) tekevät sinuun vahinkoa.", fonttikoko=opastusFonttiKoko, fontti=opastusFontti) 
                 opastus_tekstirivi2.päivitä_teksti("Hertat (taikajuomat) palauttavat terveyspisteitäsi.", fonttikoko=opastusFonttiKoko, fontti=opastusFontti)
