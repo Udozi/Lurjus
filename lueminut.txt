@@ -1,4 +1,4 @@
-Suorita lurjus.exe pelataksesi. Peli on tehty versiolla Python 3.12.
+Suorita lurjus.exe pelataksesi. Peli on tehty versioilla Python 3.12 ja 3.13.
 
 Jos peli (lurjus.exe) ei löydy kansiosta:
 Pelin kokoaminen komentokehotteesta (Pyinstaller vaadittu): pyinstaller --onefile --noconsole --icon="lurjuskuvake.ico" peli.py 

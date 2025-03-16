@@ -9,3 +9,4 @@ class Muuttujat():
     viimeksiPelattu = None
     huoneNumero = 1
     opastusTauko = False
+    käytäAsetta = True

@@ -8,6 +8,7 @@ from kortti import *
 from muuttujat import *
 from ase import *
 from pääIkkuna import *
+from äänet import *
 
 pygame.init()
 FPS = 60
@@ -87,10 +88,12 @@ def pelaa_kortti(i):
             
         uusiAse = vaikutus
         nykyinenAse.append(uusiAse)
+        Muuttujat.käytäAsetta = True
+        toista_sfx("kerää_ase")
     
     else:
         # Vihollinen haastetaan aseen kanssa
-        if nykyinenAse.__len__() > 0 and vaikutus < 0:
+        if nykyinenAse.__len__() > 0 and vaikutus < 0 and Muuttujat.käytäAsetta:
             vihollisenVoima = -1 * vaikutus
             
             # Ase kuluu käytössä: Aseella päihitettävän vihollisen
@@ -102,13 +105,15 @@ def pelaa_kortti(i):
             
                 if hpMuutos > 0:
                     hpMuutos = 0
+
+                toista_sfx("hyökkäys")
                     
             else:
                 
                 hylkaa_ase()
                 hpMuutos = int(vaikutus)
                 poistoPakka.append(pelattavaKortti)
-        
+                toista_sfx("damage")
         
         # Pelattu kortti on parannuskortti tai 
         # ilman asetta kohdattu vihollinen
@@ -119,7 +124,13 @@ def pelaa_kortti(i):
             else: hpMuutos = 0  
                  
             poistoPakka.append(pelattavaKortti)
-            if hpMuutos > 0: Muuttujat.voiParantua = False
+            if hpMuutos > 0:
+                Muuttujat.voiParantua = False
+                toista_sfx("potion")
+            elif hpMuutos < 0:
+                toista_sfx("damage")
+            else:
+                toista_sfx("denied")
             
         Muuttujat.HP = Muuttujat.HP + hpMuutos
         Muuttujat.voiJuosta = False
@@ -166,6 +177,7 @@ def pakene_huoneesta():
     nostoPakka[:0] = poyta
     poyta.clear()
     Muuttujat.voiJuosta = False
+    toista_sfx("click")
     uusi_huone()
     return
 
@@ -309,14 +321,17 @@ def peli_loop():
                                         
                     elif pikapeli_nappi.rect.collidepoint(pygame.mouse.get_pos()):
                         Muuttujat.skene = "Pikapeli"
+                        toista_sfx("click")
                         aloita_peli()
                                         
                     elif opastus_nappi.rect.collidepoint(pygame.mouse.get_pos()):
                         Muuttujat.skene = "Opastus"
+                        toista_sfx("click")
                         aloita_peli()
                                         
                     elif tekijät_nappi.rect.collidepoint(pygame.mouse.get_pos()):
                         Muuttujat.skene = "Tekijät"
+                        toista_sfx("click")
                         while Muuttujat.skene == "Tekijät":
                             peli_loop()
                         
@@ -326,8 +341,37 @@ def peli_loop():
                         Muuttujat.skene = "PaaValikko"
                                         
                     elif lopeta_nappi.rect.collidepoint(pygame.mouse.get_pos()):
+                        toista_sfx("click")
                         print("Kiitos käynnistä!")
                         Muuttujat.käynnissä = False
+
+                elif event.type == MOUSEMOTION:
+
+                    if kampanja_nappi.rect.collidepoint(pygame.mouse.get_pos()):
+                        pääIkkuna.Efektit.valikko_iso = True
+                        pääIkkuna.Efektit.valikko_hover = 0 #3 Ei käytössä
+                                        
+                    elif pikapeli_nappi.rect.collidepoint(pygame.mouse.get_pos()):
+                        pääIkkuna.Efektit.valikko_iso = True
+                        pääIkkuna.Efektit.valikko_hover = 2
+                                        
+                    elif opastus_nappi.rect.collidepoint(pygame.mouse.get_pos()):
+                        pääIkkuna.Efektit.valikko_iso = True
+                        pääIkkuna.Efektit.valikko_hover = 1
+                                        
+                    elif tekijät_nappi.rect.collidepoint(pygame.mouse.get_pos()):
+                        pääIkkuna.Efektit.valikko_iso = False
+                        pääIkkuna.Efektit.valikko_hover = 1
+                        
+                    elif asetukset_nappi.rect.collidepoint(pygame.mouse.get_pos()):
+                        pääIkkuna.Efektit.valikko_iso = False
+                        pääIkkuna.Efektit.valikko_hover = 0 #2 Ei käytössä
+                                        
+                    elif lopeta_nappi.rect.collidepoint(pygame.mouse.get_pos()):
+                        pääIkkuna.Efektit.valikko_iso = False
+                        pääIkkuna.Efektit.valikko_hover = 3
+                    else:
+                        pääIkkuna.Efektit.valikko_hover = 0
         
         elif Muuttujat.skene == "Pikapeli" or Muuttujat.skene == "Opastus":
 
@@ -357,11 +401,18 @@ def peli_loop():
                         valinta = 5
                         if korttejaPöydässä == huoneenKoko and Muuttujat.voiJuosta and (Muuttujat.skene != "Opastus" or Muuttujat.huoneNumero > 1):
                             pakene_huoneesta()
-
+                            
                         elif korttejaPöydässä < 2:
                             uusi_huone()
                         else:
                             print("Et voi poistua huoneesta nyt.")
+                            
+                    elif event.key == K_6 and not Muuttujat.peliOhi > 0:
+                        if Muuttujat.käytäAsetta:
+                            Muuttujat.käytäAsetta = False
+                        else:
+                            Muuttujat.käytäAsetta = True
+                                
 
                     if valinta > 0 and valinta <= len(poyta):
                         if not poyta[valinta - 1].onhaamu:
@@ -372,18 +423,22 @@ def peli_loop():
                         valinta = 4
                         valitse_viholliskortin_kohde(nykyinenAse, poyta[valinta-1])
                         valitse_kohde(valinta, poyta[valinta-1])
+                        pääIkkuna.Efektit.kortti_hover = 0
                     elif len(poyta) >= 3 and poyta[2].rect.collidepoint(pygame.mouse.get_pos()):
                         valinta = 3
                         valitse_viholliskortin_kohde(nykyinenAse, poyta[valinta-1])
                         valitse_kohde(valinta, poyta[valinta-1])
+                        pääIkkuna.Efektit.kortti_hover = 0
                     elif len(poyta) >= 2 and poyta[1].rect.collidepoint(pygame.mouse.get_pos()):
                         valinta = 2
                         valitse_viholliskortin_kohde(nykyinenAse, poyta[valinta-1])
                         valitse_kohde(valinta, poyta[valinta-1])
+                        pääIkkuna.Efektit.kortti_hover = 0
                     elif len(poyta) >= 1 and poyta[0].rect.collidepoint(pygame.mouse.get_pos()):
                         valinta = 1
                         valitse_viholliskortin_kohde(nykyinenAse, poyta[valinta-1])
                         valitse_kohde(valinta, poyta[valinta-1])
+                        pääIkkuna.Efektit.kortti_hover = 0
                     else:
                         valinta = -1
 
@@ -393,7 +448,14 @@ def peli_loop():
                             
                         elif korttejaPöydässä < 2 and (Muuttujat.skene != "Opastus" or Muuttujat.huoneNumero > 4 or korttejaPöydässä == 0 or Muuttujat.huoneNumero == 0):
                             Muuttujat.voiJuosta = True
+                            toista_sfx("click")
                             uusi_huone()
+                      
+                    if len(nykyinenAse) > 0 and (nykyinenAse[0].rect.collidepoint(pygame.mouse.get_pos()) or nykyinenAse[-1].rect.collidepoint(pygame.mouse.get_pos())):
+                        if Muuttujat.käytäAsetta:
+                            Muuttujat.käytäAsetta = False
+                        else:
+                            Muuttujat.käytäAsetta = True
 
                     if valinta > 0 and valinta <= len(poyta):
                         if not poyta[valinta - 1].onhaamu:
@@ -401,12 +463,34 @@ def peli_loop():
                             
                     if päävalikkoon_nappi.rect.collidepoint(pygame.mouse.get_pos()):
                         palaa_takaisin()
-                        print(Muuttujat.skene)
+                        toista_sfx("click")
                     elif uusipeli_nappi.rect.collidepoint(pygame.mouse.get_pos()):
                         aloita_peli()
-            
+                        toista_sfx("click")
+
+                elif event.type == MOUSEMOTION:
+                    if len(poyta) >= 4 and poyta[3].rect.collidepoint(pygame.mouse.get_pos()) and not poyta[3].onhaamu:
+                        pääIkkuna.Efektit.kortti_hover = 4
+                    elif len(poyta) >= 3 and poyta[2].rect.collidepoint(pygame.mouse.get_pos()) and not poyta[2].onhaamu:
+                        pääIkkuna.Efektit.kortti_hover = 3
+                    elif len(poyta) >= 2 and poyta[1].rect.collidepoint(pygame.mouse.get_pos()) and not poyta[1].onhaamu:
+                        pääIkkuna.Efektit.kortti_hover = 2
+                    elif len(poyta) >= 1 and poyta[0].rect.collidepoint(pygame.mouse.get_pos()) and not poyta[0].onhaamu:
+                        pääIkkuna.Efektit.kortti_hover = 1
+                    elif pääIkkuna.juokse_nappi.rect.collidepoint(pygame.mouse.get_pos()) and (Muuttujat.voiJuosta):
+                        pääIkkuna.Efektit.kortti_hover = 5
+                    else:
+                        pääIkkuna.Efektit.kortti_hover = 0
+
+                    if pääIkkuna.päävalikkoon_nappi.rect.collidepoint(pygame.mouse.get_pos()):
+                        pääIkkuna.Efektit.pikavalinta_hover = 2
+                    elif pääIkkuna.uusipeli_nappi.rect.collidepoint(pygame.mouse.get_pos()):
+                        pääIkkuna.Efektit.pikavalinta_hover = 1
+                    else:
+                        pääIkkuna.Efektit.pikavalinta_hover = 0
+                        
             siirrä_kohteeseen()
-            
+
         elif Muuttujat.skene == "Tekijät":
 
             for event in pygame.event.get():
@@ -422,16 +506,23 @@ def peli_loop():
                 elif event.type == MOUSEBUTTONDOWN:
                     if päävalikkoon_nappi.rect.collidepoint(pygame.mouse.get_pos()):
                         palaa_takaisin()
-                    
+                        toista_sfx("click")
+
+                elif event.type == MOUSEMOTION:
+                    if pääIkkuna.päävalikkoon_nappi.rect.collidepoint(pygame.mouse.get_pos()):
+                        pääIkkuna.Efektit.pikavalinta_hover = 2
+                    else:
+                        pääIkkuna.Efektit.pikavalinta_hover = 0
+
         piirrä_kaikki()
 
 # Täytä pohjavärillä, valitse piirettävät objektit ja päivitä ikkuna
 
 def piirrä_kaikki():
     skene = Muuttujat.skene
+    POHJA.fill((0,0,0))
 
     if skene == "PaaValikko":
-        POHJA.fill((0,0,0))
         paaValikko.piirrä(POHJA)
         kampanja_nappi.piirrä(POHJA, 660, 480)
         pikapeli_nappi.piirrä(POHJA, 400, 480)
@@ -439,10 +530,10 @@ def piirrä_kaikki():
         asetukset_nappi.piirrä(POHJA, 400, 565)
         tekijät_nappi.piirrä(POHJA, 140, 565)
         lopeta_nappi.piirrä(POHJA, 660, 565)
+        piirrä_valikon_kehys(pääIkkuna.Efektit.valikko_iso, pääIkkuna.Efektit.valikko_hover)
         
     elif skene == "Pikapeli" or skene == "Opastus":
 
-        POHJA.fill((0, 0, 0))
         if skene == "Pikapeli": pikapeli_tausta.piirrä(POHJA)
         elif skene == "Opastus": opastus_tausta.piirrä(POHJA)
         
@@ -489,10 +580,11 @@ def piirrä_kaikki():
             else:
                 piirrä_juoksunappi("taistele")
 
-            piirrä_napit(2)
+            piirrä_napit()
             piirrä_tekstit(nostoPakka)
-            
+            piirrä_kortin_kehys(pääIkkuna.Efektit.kortti_hover)
             piirrä_pöydättävä_kortti()
+            piirrä_pikavalinnan_kehys(pääIkkuna.Efektit.pikavalinta_hover)
             
             if pääIkkuna.SiirtoAnimaatiot.piirrä_siirtyvä_kortti:
                 piirrä_siirtyvä_kortti()
@@ -503,9 +595,9 @@ def piirrä_kaikki():
             peli_ohi()  
         
     elif skene == "Tekijät":
-        POHJA.fill((0, 0, 0))
         tekijät_tausta.piirrä(POHJA)
         piirrä_napit(1)
+        piirrä_pikavalinnan_kehys(pääIkkuna.Efektit.pikavalinta_hover)
     
     pygame.display.update()
     kello.tick(FPS) 

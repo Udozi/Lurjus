@@ -111,7 +111,10 @@ def piirrä_ase(aseet):
             ase.image = KorttiKuvakkeet.valitse_aseen_kuvake(ase)
             ase.rect.x = sijX
             ase.rect.y = sijY
+            if not Muuttujat.käytäAsetta:
+                ase.image.set_alpha(50)            
             ase.piirrä(POHJA)
+            
 
     except:
         return
@@ -123,6 +126,8 @@ def piirrä_viimeisin_lyöty(vihu):
         vihu.image = KorttiKuvakkeet.valitse_kortin_kuvake(vihu)
         vihu.rect.x = sijX
         vihu.rect.y = sijY
+        if not Muuttujat.käytäAsetta:
+            vihu.image.set_alpha(50)
         vihu.piirrä(POHJA)
     except:
         return
@@ -136,7 +141,7 @@ def piirrä_juoksunappi(toiminto):
     juokse_nappi.rect.y = sijY
     juokse_nappi.piirrä(POHJA)
 
-def piirrä_napit(n = 1):
+def piirrä_napit(n = 2):
     
     if n > 1:
         sijX = 668
@@ -189,8 +194,8 @@ def piirrä_tekstit(pakka):
                 opastus_tekstirivi1.päivitä_teksti("Voit käyttää asetta vain vihollisiin, joiden suuruus", fonttikoko=opastusFonttiKoko, fontti=opastusFontti) 
                 opastus_tekstirivi2.päivitä_teksti("on pienempi kuin aseella viimeksi lyöty vihollinen.", fonttikoko=opastusFonttiKoko, fontti=opastusFontti)
             case 5: 
-                opastus_tekstirivi1.päivitä_teksti("Seuraavaan huoneeseen voi edetä, kun nykyisessä ", fonttikoko=opastusFonttiKoko, fontti=opastusFontti) 
-                opastus_tekstirivi2.päivitä_teksti("huoneessa on alle kaksi korttia jäljellä.", fonttikoko=opastusFonttiKoko, fontti=opastusFontti)
+                opastus_tekstirivi1.päivitä_teksti("Voit edetä, kun huoneessa on alle kaksi korttia.", fonttikoko=opastusFonttiKoko, fontti=opastusFontti) 
+                opastus_tekstirivi2.päivitä_teksti("Poista käytöstä tai ota käyttöön painamalla sitä.", fonttikoko=opastusFonttiKoko, fontti=opastusFontti)
             case 6: 
                 opastus_tekstirivi1.päivitä_teksti("Voit saada terveyttä vain yhdestä huoneessa pelatusta", fonttikoko=19, fontti=opastusFontti) 
                 opastus_tekstirivi2.päivitä_teksti("hertasta. Seuraavassa huoneessa voit parantua lisää.", fonttikoko=opastusFonttiKoko, fontti=opastusFontti)
@@ -396,6 +401,83 @@ def nollaa_korttien_paikat():
     SiirtoAnimaatiot.piirrä_pöydättävä_kortti = False
     SiirtoAnimaatiot.piirrä_siirtyvä_asepino = False
 
+def piirrä_kortin_kehys(valinta):
+    try:
+        match valinta:
+            case 1:
+                sijX = 25
+                sijY = 142
+            case 2:
+                sijX = 179
+                sijY = 142
+            case 3:
+                sijX = 333
+                sijY = 142
+            case 4:
+                sijX = 487
+                sijY = 142
+            case 5:
+                sijX = 640
+                sijY = 140
+            case 0:
+                return
+        sijX -= 4; sijY -= 5
+        if valinta == 1 or valinta == 2 or valinta == 3 or valinta == 4:
+            Efektit.kortti_kehys.piirrä(POHJA, sijX, sijY)
+        elif valinta == 5:
+            Efektit.huone_kehys.piirrä(POHJA, sijX, sijY)
+    except:
+        return
+    
+def piirrä_valikon_kehys(iso, valinta):
+    try:
+        if iso:
+            match valinta:
+                case 1:
+                    sijX = 140
+                    sijY = 480
+                case 2:
+                    sijX = 400
+                    sijY = 480
+                case 3:
+                    sijX = 660
+                    sijY = 480
+                case 0:
+                    return
+            Efektit.valikko_iso_kehys.piirrä(POHJA, sijX, sijY)
+        else:
+            match valinta:
+                case 1:
+                    sijX = 140
+                    sijY = 565
+                case 2:
+                    sijX = 400
+                    sijY = 565
+                case 3:
+                    sijX = 660
+                    sijY = 565
+                case 0:
+                    return
+            Efektit.valikko_pieni_kehys.piirrä(POHJA, sijX, sijY)
+    except:
+        return
+    
+def piirrä_pikavalinnan_kehys(valinta):
+    try:
+        match valinta:
+            case 1:
+                sijX = 668
+                sijY = 22
+            case 2:
+                sijX = 734
+                sijY = 22
+            case 0:
+                return
+        sijX -= 5; sijY -= 4
+        Efektit.pikavalinta_kehys.piirrä(POHJA, sijX, sijY)
+    except:
+        return
+
 
 class KorttiKuvakkeet:
 
@@ -413,6 +495,7 @@ class KorttiKuvakkeet:
             return kuvake
         except:
             return
+
 
 class SiirtoAnimaatiot:
 
@@ -437,3 +520,18 @@ class SiirtoAnimaatiot:
     siirtyvä_kortti_sijY = siirtyvä_kortti_oletusarvot[1]
     siirtyvä_kortti_kohdeX = siirtyvä_kortti_oletusarvot[2]
     siirtyvä_kortti_kohdeY = siirtyvä_kortti_oletusarvot[3]
+
+
+class Efektit:
+
+    kortti_kehys = Kehys("kortti")
+    huone_kehys = Kehys("huone")
+    kortti_hover = 0
+
+    pikavalinta_kehys = Kehys("pikavalinta")
+    pikavalinta_hover = 0
+
+    valikko_iso_kehys = Kehys("valikko_iso")
+    valikko_pieni_kehys = Kehys("valikko_pieni")
+    valikko_iso = True
+    valikko_hover = 0
