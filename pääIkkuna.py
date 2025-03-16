@@ -10,7 +10,7 @@ from grafiikka import *
 pygame.init()
 FPS = 60
 kello = pygame.time.Clock()
-nopeus = 20
+nopeus = 8
 
 IKKUNAN_LEVEYS = 800
 IKKUNAN_KORKEUS = 600
@@ -74,21 +74,21 @@ def piirrä_nostopakka():
     except:
         return
 
-def piirrä_poistettu_kortti(poistoPakka):
+def piirrä_poistettu_kortti(poistoPakka, nykyinenAse):
     try:
         i = 1
-        
-        if not SiirtoAnimaatiot.piirrä_pöydättävä_kortti:
-        
-            if SiirtoAnimaatiot.piirrä_siirtyvä_kortti and Muuttujat.aseestaPoistoon > 0:
-                i = Muuttujat.aseestaPoistoon + 1
-                
-            elif SiirtoAnimaatiot.piirrä_siirtyvä_kortti and not SiirtoAnimaatiot.lisää_aseen_päälle and SiirtoAnimaatiot.siirtyvä_kortti.maa != "ruutu":
-                i = 2      
 
-        if i > len(poistoPakka): i = len(poistoPakka)
+        if SiirtoAnimaatiot.piirrä_siirtyvä_kortti and Muuttujat.aseestaPoistoon > 0:
+            i += Muuttujat.aseestaPoistoon + 1
+            if len(nykyinenAse) == 1:
+                i -= 1
+        
+        elif SiirtoAnimaatiot.piirrä_siirtyvä_kortti and (not SiirtoAnimaatiot.lisää_aseen_päälle and SiirtoAnimaatiot.siirtyvä_kortti.maa != "ruutu"):
+            i += 1     
+        
         
         ylinKortti = poistoPakka[-i]
+        print(i)
         sijX = 640
         sijY = 355
         
@@ -195,7 +195,7 @@ def piirrä_tekstit(pakka):
                 opastus_tekstirivi2.päivitä_teksti("on pienempi kuin aseella viimeksi lyöty vihollinen.", fonttikoko=opastusFonttiKoko, fontti=opastusFontti)
             case 5: 
                 opastus_tekstirivi1.päivitä_teksti("Voit edetä, kun huoneessa on alle kaksi korttia.", fonttikoko=opastusFonttiKoko, fontti=opastusFontti) 
-                opastus_tekstirivi2.päivitä_teksti("Poista käytöstä tai ota käyttöön painamalla sitä.", fonttikoko=opastusFonttiKoko, fontti=opastusFontti)
+                opastus_tekstirivi2.päivitä_teksti("Poista käytöstä tai ota käyttöön aseesi painamalla sitä.", fonttikoko=19, fontti=opastusFontti)
             case 6: 
                 opastus_tekstirivi1.päivitä_teksti("Voit saada terveyttä vain yhdestä huoneessa pelatusta", fonttikoko=19, fontti=opastusFontti) 
                 opastus_tekstirivi2.päivitä_teksti("hertasta. Seuraavassa huoneessa voit parantua lisää.", fonttikoko=opastusFonttiKoko, fontti=opastusFontti)
@@ -233,7 +233,7 @@ def piirrä_pisteet(pisteet):
     piirrä_napit()
 
 def valitse_viholliskortin_kohde(nykyinenAse, pelattu_kortti):
-    if nykyinenAse.__len__() > 0 and nykyinenAse[0].kestavyys > pelattu_kortti.arvo and (pelattu_kortti.maa == "pata" or pelattu_kortti.maa == "risti"):
+    if nykyinenAse.__len__() > 0 and nykyinenAse[0].kestavyys > pelattu_kortti.arvo and (pelattu_kortti.maa == "pata" or pelattu_kortti.maa == "risti") and Muuttujat.käytäAsetta:
         SiirtoAnimaatiot.lisää_aseen_päälle = True
     else:
         SiirtoAnimaatiot.lisää_aseen_päälle = False

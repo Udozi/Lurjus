@@ -407,7 +407,8 @@ def peli_loop():
                         else:
                             print("Et voi poistua huoneesta nyt.")
                             
-                    elif event.key == K_6 and not Muuttujat.peliOhi > 0:
+                    elif len(nykyinenAse) > 0 and event.key == K_6 and not Muuttujat.peliOhi:
+                        toista_sfx("click")
                         if Muuttujat.käytäAsetta:
                             Muuttujat.käytäAsetta = False
                         else:
@@ -451,7 +452,8 @@ def peli_loop():
                             toista_sfx("click")
                             uusi_huone()
                       
-                    if len(nykyinenAse) > 0 and (nykyinenAse[0].rect.collidepoint(pygame.mouse.get_pos()) or nykyinenAse[-1].rect.collidepoint(pygame.mouse.get_pos())):
+                    if len(nykyinenAse) > 0 and not Muuttujat.peliOhi and (nykyinenAse[0].rect.collidepoint(pygame.mouse.get_pos()) or nykyinenAse[-1].rect.collidepoint(pygame.mouse.get_pos())):
+                        toista_sfx("click")
                         if Muuttujat.käytäAsetta:
                             Muuttujat.käytäAsetta = False
                         else:
@@ -547,20 +549,20 @@ def piirrä_kaikki():
                 if Muuttujat.viimeksiPelattu.maa == "hertta":
                     herttaViimeisin = True
             
-            if nykyinenAse.__len__() > 0 and (not SiirtoAnimaatiot.piirrä_siirtyvä_kortti or herttaViimeisin) or nykyinenAse.__len__() > 1:
+            if len(nykyinenAse) > 0 and (not SiirtoAnimaatiot.piirrä_siirtyvä_kortti or herttaViimeisin) or nykyinenAse.__len__() > 1:
                 piirrä_ase(nykyinenAse)
             
-            if nostoPakka.__len__() > 0:
+            if len(poistoPakka) > 0 and not (Muuttujat.käytäAsetta and len(nostoPakka) == 1):
                 piirrä_nostopakka()
             
             if nykyinenAse.__len__() > 1:
                 i = -1
                 if nykyinenAse.__len__() > 2:
    
-                    if SiirtoAnimaatiot.piirrä_siirtyvä_kortti and not herttaViimeisin:
+                    if SiirtoAnimaatiot.piirrä_siirtyvä_kortti and not herttaViimeisin and Muuttujat.käytäAsetta:
                         i -= 1
                         
-                elif SiirtoAnimaatiot.piirrä_siirtyvä_kortti and not herttaViimeisin:
+                elif SiirtoAnimaatiot.piirrä_siirtyvä_kortti and not herttaViimeisin and Muuttujat.käytäAsetta:
                     i += 1
 
                 if i < 0: 
@@ -569,9 +571,7 @@ def piirrä_kaikki():
                     # 0 = älä piirrä   
                     piirrä_viimeisin_lyöty(nykyinenAse[i])
 
-                
-            if poistoPakka.__len__() > 0:
-                piirrä_poistettu_kortti(poistoPakka)
+            piirrä_poistettu_kortti(poistoPakka, nykyinenAse)
             
             if korttejaPöydässä < 2 and (skene != "Opastus" or Muuttujat.huoneNumero > 4 or korttejaPöydässä == 0 or Muuttujat.huoneNumero == 0):                
                 piirrä_juoksunappi("etene")
