@@ -75,7 +75,7 @@ def hylkaa_ase():
 
 def pelaa_kortti(i):
     
-    SiirtoAnimaatiot.piirrä_siirtyvä_kortti = False
+    SiirtoAnimaatiot.piirrä_pelattava_kortti = False
     SiirtoAnimaatiot.viimeisin_siirtyvä = "pelattu"
     pelattavaKortti = poyta[i-1]
     Muuttujat.viimeksiPelattu = pelattavaKortti
@@ -177,17 +177,23 @@ def poista_haamukortit():
 
 def pakene_huoneesta():
 
+    SiirtoAnimaatiot.piirrä_pakokortit = True
     random.shuffle(poyta)
     nostoPakka[:0] = poyta
     poyta.clear()
     Muuttujat.voiJuosta = False
     toista_sfx("click")
+    
+    while SiirtoAnimaatiot.piirrä_pakokortit:
+        siirrä_nostopakkaan()
+        piirrä_kaikki()
+    
     uusi_huone()
     return
 
 def peli_ohi():
 
-    SiirtoAnimaatiot.piirrä_siirtyvä_kortti = False
+    SiirtoAnimaatiot.piirrä_pelattava_kortti = False
     SiirtoAnimaatiot.piirrä_pöydättävä_kortti = False
     pisteet = Muuttujat.HP
     
@@ -273,10 +279,22 @@ def uusi_huone():
     
     Muuttujat.huoneNumero += 1
     Muuttujat.voiParantua = True
-    if not Muuttujat.opastusTauko: poista_haamukortit()
     
-    SiirtoAnimaatiot.piirrä_siirtyvä_kortti = False  
+    SiirtoAnimaatiot.piirrä_pelattava_kortti = False  
     nollaa_korttien_paikat() 
+    
+    jäljelleJäänyt = 0
+    
+    for i in range(len(poyta)):
+        if not poyta[i].onhaamu:
+            jäljelleJäänyt = i
+            SiirtoAnimaatiot.jäänyt_kortti_sijX += i * 150
+            SiirtoAnimaatiot.jäänyt_kortti = poyta[i]
+    
+    if jäljelleJäänyt > 0:
+        SiirtoAnimaatiot.piirrä_jäänyt_kortti = True
+    
+    if not Muuttujat.opastusTauko: poista_haamukortit()
 
     if not Muuttujat.opastusTauko:
         while laske_poytakortit() < huoneenKoko and nostoPakka.__len__() > 0:
@@ -494,7 +512,7 @@ def peli_loop():
                         pääIkkuna.Efektit.pikavalinta_hover = 1
                     else:
                         pääIkkuna.Efektit.pikavalinta_hover = 0
-                        
+
             siirrä_kohteeseen()
 
         elif Muuttujat.skene == "Tekijät":
@@ -546,6 +564,12 @@ def piirrä_kaikki():
         if not Muuttujat.peliOhi:
             
             korttejaPöydässä = laske_poytakortit()
+
+            if SiirtoAnimaatiot.piirrä_jäänyt_kortti:
+                piirrä_jäänyt_kortti()
+            
+            piirrä_pakokortit()
+            
             piirrä_käden_kortit(poyta)
             
             herttaViimeisin = False
@@ -553,7 +577,7 @@ def piirrä_kaikki():
                 if Muuttujat.viimeksiPelattu.maa == "hertta":
                     herttaViimeisin = True
             
-            if len(nykyinenAse) > 0 and (not SiirtoAnimaatiot.piirrä_siirtyvä_kortti or herttaViimeisin) or nykyinenAse.__len__() > 1:
+            if len(nykyinenAse) > 0 and (not SiirtoAnimaatiot.piirrä_pelattava_kortti or herttaViimeisin) or nykyinenAse.__len__() > 1:
                 piirrä_ase(nykyinenAse)
             
             if len(nostoPakka) > 0:
@@ -563,10 +587,10 @@ def piirrä_kaikki():
                 i = -1
                 if nykyinenAse.__len__() > 2:
    
-                    if SiirtoAnimaatiot.piirrä_siirtyvä_kortti and not herttaViimeisin and Muuttujat.käytäAsetta:
+                    if SiirtoAnimaatiot.piirrä_pelattava_kortti and not herttaViimeisin and Muuttujat.käytäAsetta:
                         i -= 1
                         
-                elif SiirtoAnimaatiot.piirrä_siirtyvä_kortti and not herttaViimeisin and Muuttujat.käytäAsetta:
+                elif SiirtoAnimaatiot.piirrä_pelattava_kortti and not herttaViimeisin and Muuttujat.käytäAsetta:
                     i += 1
 
                 if i < 0: 
@@ -583,7 +607,7 @@ def piirrä_kaikki():
                 piirrä_juoksunappi("pakene")
             else:
                 piirrä_juoksunappi("taistele")
-
+            
             piirrä_napit()
             piirrä_tekstit(nostoPakka)
             piirrä_kortin_kehys(pääIkkuna.Efektit.kortti_hover)
@@ -593,8 +617,8 @@ def piirrä_kaikki():
             if Muuttujat.aseestaPoistoon > 0: 
                 piirrä_vanha_asepino()
             
-            if pääIkkuna.SiirtoAnimaatiot.piirrä_siirtyvä_kortti:
-                piirrä_siirtyvä_kortti()
+            if SiirtoAnimaatiot.piirrä_pelattava_kortti:
+                piirrä_pelattava_kortti()
             else:
                 Muuttujat.aseestaPoistoon = 0
     
