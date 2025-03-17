@@ -42,7 +42,9 @@ hp_tausta = Teksti()
 hp_teksti = Teksti()
 pakka_tausta = Teksti()
 pakka_teksti = Teksti()
-pisteet_teksti = Pisteet()
+peliohi_teksti = Teksti()
+pisteet_teksti = Teksti()
+voitot_teksti = Teksti()
 f1_teksti = Teksti()
 opastus_tekstirivi1 = Teksti()
 opastus_tekstirivi2 = Teksti()
@@ -221,13 +223,21 @@ def valitse(näppäin):
 
 def piirrä_pisteet(pisteet):
     POHJA.fill((0, 0, 0))
-    pisteet_teksti.rect.center = (450, 300)
-    pisteet_teksti.päivitä_teksti("Peli ohi! Pisteesi: " + str(pisteet))
+    peliohi_teksti.rect.center = (400, 200)
+    peliohi_teksti.päivitä_teksti("Peli ohi!",fonttikoko=48)
+    peliohi_teksti.piirrä(POHJA)
+    
+    pisteet_teksti.rect.center = (300, 260)
+    pisteet_teksti.päivitä_teksti("Pisteesi: " + str(pisteet),väri=PUNAINEN,fonttikoko=80)
     pisteet_teksti.piirrä(POHJA)
     
     f1_teksti.rect.center = (300, 350)
     f1_teksti.päivitä_teksti("F1 = Aloita uusi peli - ESC = Palaa päävalikkoon", 24)
     f1_teksti.piirrä(POHJA)
+    
+    voitot_teksti.rect.center = (250, 450)
+    voitot_teksti.päivitä_teksti("Supervoitot: " + str(Muuttujat.superVoitot) + " / Voitot: " + str(Muuttujat.voitot) + " / Finaalit: " + str(Muuttujat.finaalit) + " / Häviöt: " + str(Muuttujat.häviöt),fonttikoko = 30)
+    voitot_teksti.piirrä(POHJA)
     piirrä_napit()
 
 def valitse_viholliskortin_kohde(nykyinenAse, pelattu_kortti):

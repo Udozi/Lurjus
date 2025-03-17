@@ -152,6 +152,14 @@ def pelaa_kortti(i):
     korttejaJaljella = nostoPakka.__len__() + korttejaPöydässä
     if Muuttujat.HP < 1 or korttejaJaljella == 0:
         Muuttujat.peliOhi = True
+        
+        if Muuttujat.HP < 1: 
+            if len(nostoPakka) == 0: Muuttujat.finaalit += 1
+            else: Muuttujat.häviöt += 1
+        
+        elif Muuttujat.HP == 20: Muuttujat.superVoitot += 1
+        
+        else: Muuttujat.voitot += 1
   
     return
 

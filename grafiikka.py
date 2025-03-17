@@ -53,20 +53,6 @@ class Teksti(pygame.sprite.Sprite):
 
     def piirrä(self, surface):
         surface.blit(self.text, self.rect)
-        
-class Pisteet(pygame.sprite.Sprite):
-    teksti = ""
-    def __init__(self):
-        super().__init__()
-        self.text = pygame.font.Font("freesansbold.ttf", 40).render("Tehtävänäsi on päihittää ilkeä", True, (0, 0, 0), (255, 255, 255))
-        self.rect = self.text.get_rect()
-        self.rect.center = (120, 60)
-
-    def päivitä_teksti(self, teksti):
-        self.text = pygame.font.Font("freesansbold.ttf", 40).render(teksti, True, (255, 255, 255), (0, 0, 0))
-
-    def piirrä(self, surface):
-        surface.blit(self.text, self.rect)
 
 class Kehys(pygame.sprite.Sprite):
     def __init__(self, nimi = "kortti"):

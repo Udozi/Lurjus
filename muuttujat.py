@@ -10,3 +10,7 @@ class Muuttujat():
     huoneNumero = 1
     opastusTauko = False
     käytäAsetta = True
+    häviöt = 0
+    finaalit = 0
+    voitot = 0
+    superVoitot = 0
