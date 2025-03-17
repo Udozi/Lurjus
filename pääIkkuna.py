@@ -10,7 +10,7 @@ from grafiikka import *
 pygame.init()
 FPS = 60
 kello = pygame.time.Clock()
-nopeus = 8
+nopeus = 20
 
 IKKUNAN_LEVEYS = 800
 IKKUNAN_KORKEUS = 600
@@ -85,10 +85,8 @@ def piirrä_poistettu_kortti(poistoPakka, nykyinenAse):
         
         elif SiirtoAnimaatiot.piirrä_siirtyvä_kortti and (not SiirtoAnimaatiot.lisää_aseen_päälle and SiirtoAnimaatiot.siirtyvä_kortti.maa != "ruutu"):
             i += 1     
-        
-        
+         
         ylinKortti = poistoPakka[-i]
-        print(i)
         sijX = 640
         sijY = 355
         
@@ -386,6 +384,52 @@ def piirrä_pöydättävä_kortti():
         except:
             return
 
+def piirrä_vanha_asepino():
+    delta_vax = SiirtoAnimaatiot.vanha_ase_kohdeX - SiirtoAnimaatiot.vanha_ase_sijX
+    delta_vay = SiirtoAnimaatiot.vanha_ase_kohdeY - SiirtoAnimaatiot.vanha_ase_sijY
+    delta_vvx = SiirtoAnimaatiot.vanha_vihu_kohdeX - SiirtoAnimaatiot.vanha_vihu_sijX
+    delta_vvy = SiirtoAnimaatiot.vanha_vihu_kohdeY - SiirtoAnimaatiot.vanha_vihu_sijY
+    
+    vanha_ase_hypotenuusa = ((delta_vax)**2 + (delta_vay)**2)**(1/2)
+    if abs(delta_vax) < nopeus:
+        SiirtoAnimaatiot.vanha_ase_sijX == SiirtoAnimaatiot.vanha_ase_kohdeX 
+    else: SiirtoAnimaatiot.vanha_ase_sijX += nopeus * delta_vax / vanha_ase_hypotenuusa 
+    if abs(delta_vay) < nopeus:
+        SiirtoAnimaatiot.vanha_ase_sijY == SiirtoAnimaatiot.vanha_ase_kohdeY
+    else: SiirtoAnimaatiot.vanha_ase_sijY += nopeus * delta_vay / vanha_ase_hypotenuusa
+    
+    if SiirtoAnimaatiot.piirrä_vanha_ase: 
+        SiirtoAnimaatiot.vanha_ase.image = KorttiKuvakkeet.valitse_aseen_kuvake(SiirtoAnimaatiot.vanha_ase)
+        SiirtoAnimaatiot.vanha_ase.rect.x = SiirtoAnimaatiot.vanha_ase_sijX
+        SiirtoAnimaatiot.vanha_ase.rect.y = SiirtoAnimaatiot.vanha_ase_sijY
+        SiirtoAnimaatiot.vanha_ase.piirrä(POHJA)
+        
+    if delta_vax == 0 and delta_vay == 0:
+        SiirtoAnimaatiot.piirrä_vanha_ase = False
+        SiirtoAnimaatiot.vanha_ase_sijX = SiirtoAnimaatiot.vanha_ase_oletusarvot[0]
+        SiirtoAnimaatiot.vanha_ase_sijY = SiirtoAnimaatiot.vanha_ase_oletusarvot[1]
+    
+    vanha_vihu_hypotenuusa = ((delta_vvx)**2 + (delta_vvy)**2)**(1/2)
+    if abs(delta_vvx) < nopeus:
+        SiirtoAnimaatiot.vanha_vihu_sijX == SiirtoAnimaatiot.vanha_vihu_kohdeX 
+    else: SiirtoAnimaatiot.vanha_vihu_sijX += nopeus * delta_vvx / vanha_vihu_hypotenuusa 
+    if abs(delta_vvy) < nopeus:
+        SiirtoAnimaatiot.vanha_vihu_sijY == SiirtoAnimaatiot.vanha_vihu_kohdeY
+    else: SiirtoAnimaatiot.vanha_vihu_sijY += nopeus * delta_vvy / vanha_vihu_hypotenuusa
+    
+    if SiirtoAnimaatiot.piirrä_vanha_vihu:
+        SiirtoAnimaatiot.vanha_vihu.image = KorttiKuvakkeet.valitse_kortin_kuvake(SiirtoAnimaatiot.vanha_vihu)
+        SiirtoAnimaatiot.vanha_vihu.rect.x = SiirtoAnimaatiot.vanha_vihu_sijX
+        SiirtoAnimaatiot.vanha_vihu.rect.y = SiirtoAnimaatiot.vanha_vihu_sijY
+        SiirtoAnimaatiot.vanha_vihu.piirrä(POHJA)
+        
+    if delta_vvx == 0 and delta_vvy == 0:
+        SiirtoAnimaatiot.piirrä_vanha_vihu = False
+        SiirtoAnimaatiot.vanha_vihu_sijX = SiirtoAnimaatiot.vanha_vihu_oletusarvot[0]
+        SiirtoAnimaatiot.vanha_vihu_sijY = SiirtoAnimaatiot.vanha_vihu_oletusarvot[1]
+
+    
+
 def nollaa_korttien_paikat():
     SiirtoAnimaatiot.pöydättävä_kortti_sijX = SiirtoAnimaatiot.pöydättävä_kortti_oletusarvot[0]
     SiirtoAnimaatiot.pöydättävä_kortti_sijY = SiirtoAnimaatiot.pöydättävä_kortti_oletusarvot[1]
@@ -397,9 +441,20 @@ def nollaa_korttien_paikat():
     SiirtoAnimaatiot.siirtyvä_kortti_kohdeX = SiirtoAnimaatiot.siirtyvä_kortti_oletusarvot[2]
     SiirtoAnimaatiot.siirtyvä_kortti_kohdeY = SiirtoAnimaatiot.siirtyvä_kortti_oletusarvot[3]
     
+    SiirtoAnimaatiot.vanha_ase_sijX = SiirtoAnimaatiot.vanha_ase_oletusarvot[0]
+    SiirtoAnimaatiot.vanha_ase_sijY = SiirtoAnimaatiot.vanha_ase_oletusarvot[1]
+    SiirtoAnimaatiot.vanha_ase_kohdeX = SiirtoAnimaatiot.vanha_ase_oletusarvot[2]
+    SiirtoAnimaatiot.vanha_ase_kohdeY = SiirtoAnimaatiot.vanha_ase_oletusarvot[3]
+    
+    SiirtoAnimaatiot.vanha_vihu_sijX = SiirtoAnimaatiot.vanha_vihu_oletusarvot[0]
+    SiirtoAnimaatiot.vanha_vihu_sijY = SiirtoAnimaatiot.vanha_vihu_oletusarvot[1]
+    SiirtoAnimaatiot.vanha_vihu_kohdeX = SiirtoAnimaatiot.vanha_vihu_oletusarvot[2]
+    SiirtoAnimaatiot.vanha_vihu_kohdeY = SiirtoAnimaatiot.vanha_vihu_oletusarvot[3]
+    
     SiirtoAnimaatiot.piirrä_siirtyvä_kortti = False
     SiirtoAnimaatiot.piirrä_pöydättävä_kortti = False
-    SiirtoAnimaatiot.piirrä_siirtyvä_asepino = False
+    SiirtoAnimaatiot.piirrä_vanha_ase = False
+    SiirtoAnimaatiot.piirrä_vanha_vihu = False
 
 def piirrä_kortin_kehys(valinta):
     try:
@@ -501,12 +556,15 @@ class SiirtoAnimaatiot:
 
     siirtyvä_kortti = Kortti()
     pöydättävä_kortti = Kortti()
+    vanha_ase = Ase()
+    vanha_vihu = Kortti()
     viimeisin_pelattu = 0
     viimeisin_siirtyvä = "pöydätty"
     piirrä_siirtyvä_kortti = False
     piirrä_pöydättävä_kortti = False
-    piirrä_siirtyvä_asepino = False
-    piirrä_liikettä = piirrä_siirtyvä_kortti or piirrä_pöydättävä_kortti or piirrä_siirtyvä_asepino
+    piirrä_vanha_ase = False
+    piirrä_vanha_vihu = False
+    piirrä_liikettä = piirrä_siirtyvä_kortti or piirrä_pöydättävä_kortti or piirrä_vanha_ase or piirrä_vanha_vihu
     lisää_aseen_päälle = False
     
     pöydättävä_kortti_oletusarvot = [25, 355, 475, 142]
@@ -520,6 +578,19 @@ class SiirtoAnimaatiot:
     siirtyvä_kortti_sijY = siirtyvä_kortti_oletusarvot[1]
     siirtyvä_kortti_kohdeX = siirtyvä_kortti_oletusarvot[2]
     siirtyvä_kortti_kohdeY = siirtyvä_kortti_oletusarvot[3]
+    
+    vanha_ase_oletusarvot = [450, 355, 640, 355]
+    vanha_ase_sijX = vanha_ase_oletusarvot[0]
+    vanha_ase_sijY = vanha_ase_oletusarvot[1]
+    vanha_ase_kohdeX = vanha_ase_oletusarvot[2]
+    vanha_ase_kohdeY = vanha_ase_oletusarvot[3]
+    
+    vanha_vihu_oletusarvot = [490, 395, 640, 355]
+    vanha_vihu_sijX = vanha_vihu_oletusarvot[0]
+    vanha_vihu_sijY = vanha_vihu_oletusarvot[1]
+    vanha_vihu_kohdeX = vanha_vihu_oletusarvot[2]
+    vanha_vihu_kohdeY = vanha_vihu_oletusarvot[3]
+    
 
 
 class Efektit:

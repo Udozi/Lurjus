@@ -64,6 +64,10 @@ def paljasta_kortti():
 def hylkaa_ase():
     
     Muuttujat.aseestaPoistoon = nykyinenAse.__len__()
+    SiirtoAnimaatiot.vanha_ase = nykyinenAse[0]
+    SiirtoAnimaatiot.vanha_vihu = nykyinenAse[-1]
+    SiirtoAnimaatiot.piirrä_vanha_ase = True
+    SiirtoAnimaatiot.piirrä_vanha_vihu = True
     poistoPakka.extend(nykyinenAse)
     nykyinenAse.clear()
     
@@ -552,7 +556,7 @@ def piirrä_kaikki():
             if len(nykyinenAse) > 0 and (not SiirtoAnimaatiot.piirrä_siirtyvä_kortti or herttaViimeisin) or nykyinenAse.__len__() > 1:
                 piirrä_ase(nykyinenAse)
             
-            if len(poistoPakka) > 0 and not (Muuttujat.käytäAsetta and len(nostoPakka) == 1):
+            if len(nostoPakka) > 0:
                 piirrä_nostopakka()
             
             if nykyinenAse.__len__() > 1:
@@ -585,6 +589,9 @@ def piirrä_kaikki():
             piirrä_kortin_kehys(pääIkkuna.Efektit.kortti_hover)
             piirrä_pöydättävä_kortti()
             piirrä_pikavalinnan_kehys(pääIkkuna.Efektit.pikavalinta_hover)
+            
+            if Muuttujat.aseestaPoistoon > 0: 
+                piirrä_vanha_asepino()
             
             if pääIkkuna.SiirtoAnimaatiot.piirrä_siirtyvä_kortti:
                 piirrä_siirtyvä_kortti()
