@@ -7,10 +7,13 @@ class Muuttujat():
     skene = "PaaValikko"
     aseestaPoistoon = 0
     viimeksiPelattu = None
-    huoneNumero = 1
-    opastusTauko = False
+    huonenro = 1
+    opastustauko = False
     käytäAsetta = True
     häviöt = 0
     finaalit = 0
     voitot = 0
     superVoitot = 0
+    tyrmävalinta = "Vaikea"
+    vaikeusaste = 0
+    voittoputki = 0

@@ -25,7 +25,7 @@ class Nappi(pygame.sprite.Sprite):
         super().__init__()
         self.toiminto = toiminto
         latausnimi = "kuvat/napit/" + toiminto + "_nappi.png"
-        self.image = pygame.image.load(latausnimi)
+        self.image = pygame.image.load(latausnimi).convert_alpha()
         self.rect = self.image.get_rect()
         
     def päivitä_kuva(self, nimi):
@@ -33,6 +33,20 @@ class Nappi(pygame.sprite.Sprite):
         self.image = pygame.image.load(latausnimi)
         self.rect = self.image.get_rect()
 
+    def piirrä(self, pohja, xpos = None, ypos = None):
+        
+        if xpos != None and ypos != None:
+            self.rect.center = (xpos, ypos)
+        
+        pohja.blit(self.image, self.rect)
+
+class Kuva(pygame.sprite.Sprite):
+    def __init__(self, nimi):
+        super().__init__()
+        latausnimi = "kuvat/" + nimi + ".png"
+        self.image = pygame.image.load(latausnimi)
+        self.rect = self.image.get_rect()
+        
     def piirrä(self, pohja, xpos = None, ypos = None):
         
         if xpos != None and ypos != None:

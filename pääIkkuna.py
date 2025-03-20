@@ -26,6 +26,7 @@ paaValikko = Taustakuva("menuTausta")
 pikapeli_tausta = Taustakuva("pikapeliTausta")
 opastus_tausta = Taustakuva("opastusTausta")
 tekijät_tausta = Taustakuva("tekijätTausta")
+valitsetyrmä_tausta = Taustakuva("tyrmävalintaTausta")
 #Päävalikon napit
 kampanja_nappi = Nappi("kampanja")
 pikapeli_nappi = Nappi("pikapeli")
@@ -33,11 +34,20 @@ opastus_nappi = Nappi("opastus")
 asetukset_nappi = Nappi("asetukset")
 tekijät_nappi = Nappi("tekijät")
 lopeta_nappi = Nappi("lopeta")
+
+# Muut käyttöliittymän napit
 päävalikkoon_nappi = Nappi("päävalikkoon")
 uusipeli_nappi = Nappi("uusipeli")
+juokse_nappi = Nappi("taistele")
+vaikea_nappi = Nappi("vaikea")
+vaikea_nappi.rect = pygame.Rect(435, 227, 225, 332)
+helppo_nappi = Nappi("helppo")
+helppo_nappi.rect = pygame.Rect(90, 245, 238, 313)
+vaikea_info = Kuva("vaikeaInfo")
+helppo_info = Kuva("helppoInfo")
 
 viimeisin_lyöty = Kortti()
-juokse_nappi = Nappi("taistele")
+
 hp_tausta = Teksti()
 hp_teksti = Teksti()
 pakka_tausta = Teksti()
@@ -45,9 +55,11 @@ pakka_teksti = Teksti()
 peliohi_teksti = Teksti()
 pisteet_teksti = Teksti()
 voitot_teksti = Teksti()
+voittoputki_teksti = Teksti()
 f1_teksti = Teksti()
 opastus_tekstirivi1 = Teksti()
 opastus_tekstirivi2 = Teksti()
+valitsetyrmä_tekstirivi1 = Teksti()
 
 def piirrä_käden_kortit(pöytä):
     try:
@@ -157,27 +169,50 @@ def piirrä_napit(n = 2):
     päävalikkoon_nappi.piirrä(POHJA)
     
 
-def piirrä_tekstit(pakka):
-    hp_tausta.rect.center = (350, 415)
-    hp_tausta.päivitä_teksti(str(Muuttujat.HP), 92, MUSTA)
-    hp_tausta.piirrä(POHJA)
-    hp_teksti.rect.center = (350, 415)
-    hp_teksti.päivitä_teksti(str(Muuttujat.HP), 88, VALKOINEN)
-    hp_teksti.piirrä(POHJA)
-    pakka_tausta.rect.center = (175, 415)
-    pakka_tausta.päivitä_teksti(str(len(pakka)), 92, MUSTA)
-    pakka_tausta.piirrä(POHJA)
-    pakka_teksti.rect.center = (175, 415)
-    pakka_teksti.päivitä_teksti(str(len(pakka)), 88, VALKOINEN)
-    pakka_teksti.piirrä(POHJA)
+def piirrä_tekstit(pakka=None):
+    if pakka != None:
+        hp_tausta.rect.center = (350, 415)
+        hp_tausta.päivitä_teksti(str(Muuttujat.HP), 92, MUSTA)
+        hp_tausta.piirrä(POHJA)
+        hp_teksti.rect.center = (350, 415)
+        hp_teksti.päivitä_teksti(str(Muuttujat.HP), 88, VALKOINEN)
+        hp_teksti.piirrä(POHJA)
+        pakka_tausta.rect.center = (175, 415)
+        pakka_tausta.päivitä_teksti(str(len(pakka)), 92, MUSTA)
+        pakka_tausta.piirrä(POHJA)
+        pakka_teksti.rect.center = (175, 415)
+        pakka_teksti.päivitä_teksti(str(len(pakka)), 88, VALKOINEN)
+        pakka_teksti.piirrä(POHJA)
+        
+        if Muuttujat.skene == "Kampanja":
+            valitsetyrmä_tekstirivi1.rect.center = (180, 30)
+            infoFontti = "Dubai"
+            infoFonttiKoko = 36
+            if Muuttujat.tyrmävalinta == "Helppo":
+                valitsetyrmä_tekstirivi1.päivitä_teksti("A = 1", fontti=infoFontti, fonttikoko=infoFonttiKoko)
+                valitsetyrmä_tekstirivi1.piirrä(POHJA)
+            else:
+                valitsetyrmä_tekstirivi1.päivitä_teksti("A = 14", fontti=infoFontti, fonttikoko=infoFonttiKoko)
+                valitsetyrmä_tekstirivi1.piirrä(POHJA)
     
-    if Muuttujat.skene == "Opastus":
+    if Muuttujat.skene == "ValitseTyrmä":
+        valitsetyrmä_tekstirivi1.rect.center = (380, 40)
+        infoFontti = "Dubai"
+        infoFonttiKoko = 36
+        if KuvaValinnat.helppo_ovi:
+            valitsetyrmä_tekstirivi1.päivitä_teksti("A = 1", fontti=infoFontti, fonttikoko=infoFonttiKoko)
+            valitsetyrmä_tekstirivi1.piirrä(POHJA)
+        elif KuvaValinnat.vaikea_ovi:
+            valitsetyrmä_tekstirivi1.päivitä_teksti("A = 14", fontti=infoFontti, fonttikoko=infoFonttiKoko)
+            valitsetyrmä_tekstirivi1.piirrä(POHJA)
+    
+    elif Muuttujat.skene == "Opastus":
         opastus_tekstirivi1.rect.center = (330, 25)
         opastus_tekstirivi2.rect.center = (330, 55)
         opastusFontti = "Dubai"
         opastusFonttiKoko = 20
 
-        match Muuttujat.huoneNumero:
+        match Muuttujat.huonenro:
             case 0:
                 opastus_tekstirivi1.päivitä_teksti("Tervetuloa opastuskierrokselle! Pelaa kortteja", fonttikoko=opastusFonttiKoko, fontti=opastusFontti) 
                 opastus_tekstirivi2.päivitä_teksti("painamalla niitä. Paina 'Etene' jatkaaksesi.", fonttikoko=opastusFonttiKoko, fontti=opastusFontti)
@@ -223,21 +258,25 @@ def valitse(näppäin):
 
 def piirrä_pisteet(pisteet):
     POHJA.fill((0, 0, 0))
-    peliohi_teksti.rect.center = (400, 200)
     peliohi_teksti.päivitä_teksti("Peli ohi!",fonttikoko=48)
+    peliohi_teksti.rect.center = (400, 200)
     peliohi_teksti.piirrä(POHJA)
     
-    pisteet_teksti.rect.center = (300, 260)
     pisteet_teksti.päivitä_teksti("Pisteesi: " + str(pisteet),väri=PUNAINEN,fonttikoko=80)
+    pisteet_teksti.rect.center = (300, 260)
     pisteet_teksti.piirrä(POHJA)
     
-    f1_teksti.rect.center = (300, 350)
     f1_teksti.päivitä_teksti("F1 = Aloita uusi peli - ESC = Palaa päävalikkoon", 24)
+    f1_teksti.rect.center = (300, 350)
     f1_teksti.piirrä(POHJA)
     
-    voitot_teksti.rect.center = (250, 450)
     voitot_teksti.päivitä_teksti("Supervoitot: " + str(Muuttujat.superVoitot) + " / Voitot: " + str(Muuttujat.voitot) + " / Finaalit: " + str(Muuttujat.finaalit) + " / Häviöt: " + str(Muuttujat.häviöt),fonttikoko = 30)
+    voitot_teksti.rect.center = (250, 450)
     voitot_teksti.piirrä(POHJA)
+    
+    voittoputki_teksti.päivitä_teksti("Voittoputki: " + str(Muuttujat.voittoputki),fonttikoko = 30)
+    voittoputki_teksti.rect.center = (400, 500)
+    voittoputki_teksti.piirrä(POHJA)
     piirrä_napit()
 
 def valitse_viholliskortin_kohde(nykyinenAse, pelattu_kortti):
@@ -658,6 +697,10 @@ class KorttiKuvakkeet:
             return kuvake
         except:
             return
+
+class KuvaValinnat:
+    helppo_ovi = False
+    vaikea_ovi = False
 
 
 class SiirtoAnimaatiot:
