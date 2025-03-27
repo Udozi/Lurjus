@@ -27,8 +27,10 @@ pikapeli_tausta = Taustakuva("pikapeliTausta")
 opastus_tausta = Taustakuva("opastusTausta")
 tekijät_tausta = Taustakuva("tekijätTausta")
 valitsetyrmä_tausta = Taustakuva("tyrmävalintaTausta")
+kauppa_tausta = Taustakuva("kauppaTausta")
+
 #Päävalikon napit
-kampanja_nappi = Nappi("kampanja")
+seikkailu_nappi = Nappi("seikkailu")
 pikapeli_nappi = Nappi("pikapeli")
 opastus_nappi = Nappi("opastus")
 asetukset_nappi = Nappi("asetukset")
@@ -39,17 +41,29 @@ lopeta_nappi = Nappi("lopeta")
 päävalikkoon_nappi = Nappi("päävalikkoon")
 uusipeli_nappi = Nappi("uusipeli")
 juokse_nappi = Nappi("taistele")
+jatka_nappi = Nappi("jatka")
+jatka_nappi.rect = pygame.Rect(705, 510, 70, 60)
 vaikea_nappi = Nappi("vaikea")
 vaikea_nappi.rect = pygame.Rect(435, 227, 225, 332)
 helppo_nappi = Nappi("helppo")
 helppo_nappi.rect = pygame.Rect(90, 245, 238, 313)
 vaikea_info = Kuva("vaikeaInfo")
 helppo_info = Kuva("helppoInfo")
+kauppa_info = Kuva("kauppaInfo")
+kauppaan_nappi = Nappi("kauppaan")
+kauppias1_nappi = Nappi("kauppias")
+kauppias2_nappi = Nappi("kauppias")
+kauppias3_nappi = Nappi("kauppias")
+kauppias4_nappi = Nappi("kauppias")
+kauppias1_nappi.rect.center = (107, 415)
+kauppias2_nappi.rect.center = (301, 415)
 
 viimeisin_lyöty = Kortti()
 
 hp_tausta = Teksti()
 hp_teksti = Teksti()
+maxhp_tausta = Teksti()
+maxhp_teksti = Teksti()
 pakka_tausta = Teksti()
 pakka_teksti = Teksti()
 peliohi_teksti = Teksti()
@@ -60,6 +74,17 @@ f1_teksti = Teksti()
 opastus_tekstirivi1 = Teksti()
 opastus_tekstirivi2 = Teksti()
 valitsetyrmä_tekstirivi1 = Teksti()
+vaikeusAsteInfo = Teksti()
+helmiä_teksti = Teksti()
+kauppias1_teksti = Teksti()
+kauppias1_hinta = Teksti()
+kauppias2_teksti = Teksti()
+kauppias2_hinta = Teksti()
+kauppias3_teksti = Teksti()
+kauppias3_hinta = Teksti()
+kauppias4_teksti = Teksti()
+kauppias4_hinta = Teksti()
+
 
 def piirrä_käden_kortit(pöytä):
     try:
@@ -171,41 +196,65 @@ def piirrä_napit(n = 2):
 
 def piirrä_tekstit(pakka=None):
     if pakka != None:
-        hp_tausta.rect.center = (350, 415)
+        
         hp_tausta.päivitä_teksti(str(Muuttujat.HP), 92, MUSTA)
-        hp_tausta.piirrä(POHJA)
-        hp_teksti.rect.center = (350, 415)
+        hp_tausta.rect = hp_tausta.text.get_rect()
+        hp_tausta.rect.center = (260, 430)
+        hp_tausta.piirrä(POHJA)        
         hp_teksti.päivitä_teksti(str(Muuttujat.HP), 88, VALKOINEN)
+        hp_teksti.rect = hp_teksti.text.get_rect()
+        hp_teksti.rect.center = (260, 430)
         hp_teksti.piirrä(POHJA)
-        pakka_tausta.rect.center = (175, 415)
+                
+        maxhp_tausta.päivitä_teksti("/ " + str(Muuttujat.maxHP), 48, MUSTA)
+        maxhp_tausta.rect = maxhp_tausta.text.get_rect()
+        maxhp_tausta.rect.center = (260, 480)
+        maxhp_tausta.piirrä(POHJA)
+        maxhp_teksti.rect = maxhp_teksti.text.get_rect()        
+        maxhp_teksti.päivitä_teksti("/ " + str(Muuttujat.maxHP), 44, VALKOINEN)
+        maxhp_teksti.rect.center = (260, 480)
+        maxhp_teksti.piirrä(POHJA)
+        
+        
         pakka_tausta.päivitä_teksti(str(len(pakka)), 92, MUSTA)
-        pakka_tausta.piirrä(POHJA)
-        pakka_teksti.rect.center = (175, 415)
+        pakka_tausta.rect = pakka_tausta.text.get_rect()
+        pakka_tausta.rect.center = (90, 440)
+        pakka_tausta.piirrä(POHJA)        
         pakka_teksti.päivitä_teksti(str(len(pakka)), 88, VALKOINEN)
+        pakka_teksti.rect = pakka_teksti.text.get_rect()
+        pakka_teksti.rect.center = (90, 440)
         pakka_teksti.piirrä(POHJA)
         
-        if Muuttujat.skene == "Kampanja":
-            valitsetyrmä_tekstirivi1.rect.center = (180, 30)
+        if Muuttujat.skene == "Seikkailu":
+            vaikeusAsteInfo.rect.center = (150, 30)
             infoFontti = "Dubai"
-            infoFonttiKoko = 36
-            if Muuttujat.tyrmävalinta == "Helppo":
-                valitsetyrmä_tekstirivi1.päivitä_teksti("A = 1", fontti=infoFontti, fonttikoko=infoFonttiKoko)
-                valitsetyrmä_tekstirivi1.piirrä(POHJA)
-            else:
-                valitsetyrmä_tekstirivi1.päivitä_teksti("A = 14", fontti=infoFontti, fonttikoko=infoFonttiKoko)
-                valitsetyrmä_tekstirivi1.piirrä(POHJA)
+            infoFonttiKoko = 28
+            vaikeusAsteInfo.päivitä_teksti("Vaikeusaste: " + str(Muuttujat.vaikeusaste), fontti=infoFontti, fonttikoko=infoFonttiKoko)
+            vaikeusAsteInfo.piirrä(POHJA)
     
     if Muuttujat.skene == "ValitseTyrmä":
-        valitsetyrmä_tekstirivi1.rect.center = (380, 40)
+        valitsetyrmä_tekstirivi1.rect.center = (350, 40)
         infoFontti = "Dubai"
         infoFonttiKoko = 36
         if KuvaValinnat.helppo_ovi:
-            valitsetyrmä_tekstirivi1.päivitä_teksti("A = 1", fontti=infoFontti, fonttikoko=infoFonttiKoko)
+            valitsetyrmä_tekstirivi1.päivitä_teksti("Vaikeusaste +0.5", fontti=infoFontti, fonttikoko=infoFonttiKoko)
             valitsetyrmä_tekstirivi1.piirrä(POHJA)
         elif KuvaValinnat.vaikea_ovi:
-            valitsetyrmä_tekstirivi1.päivitä_teksti("A = 14", fontti=infoFontti, fonttikoko=infoFonttiKoko)
+            valitsetyrmä_tekstirivi1.päivitä_teksti("Vaikeusaste +1", fontti=infoFontti, fonttikoko=infoFonttiKoko)
             valitsetyrmä_tekstirivi1.piirrä(POHJA)
     
+    elif Muuttujat.skene == "Kauppa":
+        
+        helmiä_teksti.päivitä_teksti("Helmiä: " + str(Muuttujat.helmiä), fontti="Dubai", fonttikoko=36)
+        helmiä_teksti.rect = helmiä_teksti.text.get_rect()
+        helmiä_teksti.rect.center = (200, 550)
+        helmiä_teksti.piirrä(POHJA)        
+        
+        hp_teksti.päivitä_teksti("HP: " + str(Muuttujat.HP) + " / " + str(Muuttujat.maxHP), fontti="Dubai", fonttikoko=36)
+        hp_teksti.rect = hp_teksti.text.get_rect()
+        hp_teksti.rect.center = (500, 550)
+        hp_teksti.piirrä(POHJA)
+   
     elif Muuttujat.skene == "Opastus":
         opastus_tekstirivi1.rect.center = (330, 25)
         opastus_tekstirivi2.rect.center = (330, 55)
@@ -257,19 +306,46 @@ def valitse(näppäin):
     elif näppäin == K_4: return 4                
 
 def piirrä_pisteet(pisteet):
+    
     POHJA.fill((0, 0, 0))
-    peliohi_teksti.päivitä_teksti("Peli ohi!",fonttikoko=48)
-    peliohi_teksti.rect.center = (400, 200)
-    peliohi_teksti.piirrä(POHJA)
     
-    pisteet_teksti.päivitä_teksti("Pisteesi: " + str(pisteet),väri=PUNAINEN,fonttikoko=80)
-    pisteet_teksti.rect.center = (300, 260)
-    pisteet_teksti.piirrä(POHJA)
+    # Jos seikkailu jatkuu:
     
-    f1_teksti.päivitä_teksti("F1 = Aloita uusi peli - ESC = Palaa päävalikkoon", 24)
-    f1_teksti.rect.center = (300, 350)
-    f1_teksti.piirrä(POHJA)
+    if Muuttujat.skene == "Seikkailu" and Muuttujat.nostoPinoKortit == 0:
+        peliohi_teksti.päivitä_teksti("Tyrmä suoritettu!",fonttikoko=48)
+        peliohi_teksti.rect.center = (350, 200)
+        peliohi_teksti.piirrä(POHJA)
+        
+        kauppaan_nappi.rect.center = (380, 350)
+        kauppaan_nappi.piirrä(POHJA)
+        
+        if pisteet < 1:
+            pisteet_teksti.päivitä_teksti("Pisteesi: " + str(pisteet),väri=PUNAINEN,fonttikoko=80)
+        else:
+            pisteet_teksti.päivitä_teksti("Pisteesi: " + str(pisteet),väri=VALKOINEN,fonttikoko=80)
+        pisteet_teksti.rect.center = (340, 260)
+        pisteet_teksti.piirrä(POHJA)
     
+        piirrä_napit(1)
+    
+    
+    else:
+        peliohi_teksti.päivitä_teksti("Peli ohi!",fonttikoko=48)
+        peliohi_teksti.rect.center = (400, 200)
+        peliohi_teksti.piirrä(POHJA)
+        
+        if pisteet < 1:
+            pisteet_teksti.päivitä_teksti("Pisteesi: " + str(pisteet),väri=PUNAINEN,fonttikoko=80)
+        else:
+            pisteet_teksti.päivitä_teksti("Pisteesi: " + str(pisteet),väri=VALKOINEN,fonttikoko=80)
+        pisteet_teksti.rect.center = (300, 260)
+        pisteet_teksti.piirrä(POHJA)
+        
+        f1_teksti.päivitä_teksti("F1 = Aloita uusi peli - ESC = Palaa päävalikkoon", 24)
+        f1_teksti.rect.center = (300, 350)
+        f1_teksti.piirrä(POHJA)
+        piirrä_napit()
+        
     voitot_teksti.päivitä_teksti("Supervoitot: " + str(Muuttujat.superVoitot) + " / Voitot: " + str(Muuttujat.voitot) + " / Finaalit: " + str(Muuttujat.finaalit) + " / Häviöt: " + str(Muuttujat.häviöt),fonttikoko = 30)
     voitot_teksti.rect.center = (250, 450)
     voitot_teksti.piirrä(POHJA)
@@ -277,7 +353,7 @@ def piirrä_pisteet(pisteet):
     voittoputki_teksti.päivitä_teksti("Voittoputki: " + str(Muuttujat.voittoputki),fonttikoko = 30)
     voittoputki_teksti.rect.center = (400, 500)
     voittoputki_teksti.piirrä(POHJA)
-    piirrä_napit()
+    
 
 def valitse_viholliskortin_kohde(nykyinenAse, pelattu_kortti):
     if nykyinenAse.__len__() > 0 and nykyinenAse[0].kestavyys > pelattu_kortti.arvo and (pelattu_kortti.maa == "pata" or pelattu_kortti.maa == "risti") and Muuttujat.käytäAsetta:
@@ -685,14 +761,23 @@ class KorttiKuvakkeet:
 
     def valitse_kortin_kuvake(kortti):
         kuvake = None
-        tiedoston_nimi = "kuvat/kortit/" + kortti.maa + str(kortti.arvo) + ".png"
+        kansio = "kuvat/kortit/"
+        
+        if Muuttujat.skene == "Seikkailu" and (kortti.arvo > 10 or kortti.arvo == 1):
+            kansio = "kuvat/kortit/seikkailu/"
+        
+        tiedoston_nimi = kansio + kortti.maa + str(kortti.arvo) + ".png"
         kuvake = pygame.image.load(tiedoston_nimi)
         return kuvake
     
     def valitse_aseen_kuvake(ase):
-        try:
+        try:          
             kuvake = None
-            tiedoston_nimi = "kuvat/kortit/ruutu" + str(ase.voima) + ".png"
+            
+            if Muuttujat.skene == "Seikkailu" and ase.voima > 10:
+                tiedoston_nimi = "kuvat/kortit/seikkailu/ruutu" + str(ase.voima) + ".png"
+            else:
+                tiedoston_nimi = "kuvat/kortit/ruutu" + str(ase.voima) + ".png"
             kuvake = pygame.image.load(tiedoston_nimi)
             return kuvake
         except:
@@ -701,6 +786,10 @@ class KorttiKuvakkeet:
 class KuvaValinnat:
     helppo_ovi = False
     vaikea_ovi = False
+    kauppias1 = True
+    kauppias2 = True
+    kauppias3 = True
+    kauppias4 = True
 
 
 class SiirtoAnimaatiot:

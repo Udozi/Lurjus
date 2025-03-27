@@ -1,9 +1,8 @@
-import random, pygame 
+import pygame 
 from ase import *
 from grafiikka import *
 
 maat = ["pata","hertta","risti","ruutu"]
-arvot = [range(2,14)]
 
 class Kortti():
     onhaamu = False
