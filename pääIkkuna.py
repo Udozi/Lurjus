@@ -50,6 +50,7 @@ helppo_nappi.rect = pygame.Rect(90, 245, 238, 313)
 vaikea_info = Kuva("vaikeaInfo")
 helppo_info = Kuva("helppoInfo")
 kauppa_info = Kuva("kauppaInfo")
+kauppa_info.rect = pygame.Rect(5, 5, 380, 100)
 kauppaan_nappi = Nappi("kauppaan")
 kauppias1_nappi = Nappi("kauppias")
 kauppias2_nappi = Nappi("kauppias")
@@ -57,6 +58,7 @@ kauppias3_nappi = Nappi("kauppias")
 kauppias4_nappi = Nappi("kauppias")
 kauppias1_nappi.rect.center = (107, 415)
 kauppias2_nappi.rect.center = (301, 415)
+kauppias3_nappi.rect.center = (495, 415)
 
 viimeisin_lyöty = Kortti()
 
@@ -74,7 +76,10 @@ f1_teksti = Teksti()
 opastus_tekstirivi1 = Teksti()
 opastus_tekstirivi2 = Teksti()
 valitsetyrmä_tekstirivi1 = Teksti()
+valitsetyrmä_tekstirivi2 = Teksti()
 vaikeusAsteInfo = Teksti()
+valittuHaasteInfo = Teksti()
+valittuHaasteLisäinfo = Teksti()
 helmiä_teksti = Teksti()
 kauppias1_teksti = Teksti()
 kauppias1_hinta = Teksti()
@@ -84,6 +89,9 @@ kauppias3_teksti = Teksti()
 kauppias3_hinta = Teksti()
 kauppias4_teksti = Teksti()
 kauppias4_hinta = Teksti()
+kauppias_info_otsikko = Teksti()
+kauppias_info_rivi1 = Teksti()
+kauppias_info_rivi2 = Teksti()
 
 
 def piirrä_käden_kortit(pöytä):
@@ -95,7 +103,7 @@ def piirrä_käden_kortit(pöytä):
         for i in range(0, pöydässäKortteja):
             kortti = pöytä[i]
             
-            if not kortti.onhaamu and not (i == 0 and SiirtoAnimaatiot.piirrä_jäänyt_kortti):
+            if not kortti.onhaamu and not (i == 0 and SiirtoAnimaatiot.piirrä_jäänyt_kortti) and not (i == 1 and SiirtoAnimaatiot.piirrä_jäänyt_kortti2):
                 kortti.image = KorttiKuvakkeet.valitse_kortin_kuvake(kortti)
                 kortti.rect.x = korttien_x_sijainnit[i]
                 kortti.rect.y = korttien_y_sijainnit[i]
@@ -215,7 +223,6 @@ def piirrä_tekstit(pakka=None):
         maxhp_teksti.rect.center = (260, 480)
         maxhp_teksti.piirrä(POHJA)
         
-        
         pakka_tausta.päivitä_teksti(str(len(pakka)), 92, MUSTA)
         pakka_tausta.rect = pakka_tausta.text.get_rect()
         pakka_tausta.rect.center = (90, 440)
@@ -226,22 +233,36 @@ def piirrä_tekstit(pakka=None):
         pakka_teksti.piirrä(POHJA)
         
         if Muuttujat.skene == "Seikkailu":
-            vaikeusAsteInfo.rect.center = (150, 30)
+            vaikeusAsteInfo.rect.center = (120, 30)
             infoFontti = "Dubai"
             infoFonttiKoko = 28
             vaikeusAsteInfo.päivitä_teksti("Vaikeusaste: " + str(Muuttujat.vaikeusaste), fontti=infoFontti, fonttikoko=infoFonttiKoko)
             vaikeusAsteInfo.piirrä(POHJA)
+            
+            if Muuttujat.valittuHaaste != None:
+                valittuHaasteInfo.rect.center = (120, 60)
+                valittuHaasteInfo.päivitä_teksti("Haaste: " + Muuttujat.valittuHaaste.nimi, fontti=infoFontti, fonttikoko=20)
+                valittuHaasteInfo.piirrä(POHJA)
+                valittuHaasteLisäinfo.rect.center = (120, 90)
+                valittuHaasteLisäinfo.päivitä_teksti("Tässä pelissä "+ Muuttujat.valittuHaaste.kuvaus1 + " " + Muuttujat.valittuHaaste.kuvaus2, fontti="Arial", fonttikoko= 12)
+                valittuHaasteLisäinfo.piirrä(POHJA)
+                
     
     if Muuttujat.skene == "ValitseTyrmä":
-        valitsetyrmä_tekstirivi1.rect.center = (350, 40)
+        valitsetyrmä_tekstirivi1.rect.center = (150, 20)
+        valitsetyrmä_tekstirivi2.rect.center = (150, 60)
         infoFontti = "Dubai"
         infoFonttiKoko = 36
         if KuvaValinnat.helppo_ovi:
-            valitsetyrmä_tekstirivi1.päivitä_teksti("Vaikeusaste +0.5", fontti=infoFontti, fonttikoko=infoFonttiKoko)
+            valitsetyrmä_tekstirivi1.päivitä_teksti("Vaikeusaste +0.5, Ei haasteita,", fontti=infoFontti, fonttikoko=infoFonttiKoko)
+            valitsetyrmä_tekstirivi2.päivitä_teksti("Parannu heti täyteen terveyteen", fontti=infoFontti, fonttikoko=infoFonttiKoko)
             valitsetyrmä_tekstirivi1.piirrä(POHJA)
+            valitsetyrmä_tekstirivi2.piirrä(POHJA)
         elif KuvaValinnat.vaikea_ovi:
-            valitsetyrmä_tekstirivi1.päivitä_teksti("Vaikeusaste +1", fontti=infoFontti, fonttikoko=infoFonttiKoko)
+            valitsetyrmä_tekstirivi1.päivitä_teksti("Vaikeusaste +1, Haaste mahdollinen,", fontti=infoFontti, fonttikoko=infoFonttiKoko)
+            valitsetyrmä_tekstirivi2.päivitä_teksti("Jatka nykyisillä terveyspisteilläsi", fontti=infoFontti, fonttikoko=infoFonttiKoko)
             valitsetyrmä_tekstirivi1.piirrä(POHJA)
+            valitsetyrmä_tekstirivi2.piirrä(POHJA)
     
     elif Muuttujat.skene == "Kauppa":
         
@@ -451,10 +472,11 @@ def siirrä_kohteeseen():
             SiirtoAnimaatiot.siirtyvä_kortti_sijX = sijX
             SiirtoAnimaatiot.siirtyvä_kortti_sijY = sijY
             
-            if not (SiirtoAnimaatiot.siirtyvä_kortti_sijX == kohdeX and SiirtoAnimaatiot.siirtyvä_kortti_sijY == kohdeY):
+            if not (SiirtoAnimaatiot.siirtyvä_kortti_sijX == kohdeX and SiirtoAnimaatiot.siirtyvä_kortti_sijY == kohdeY or (Muuttujat.valittuHaaste == "ahtaatHuoneet" and sijX == 353.0)):
                 SiirtoAnimaatiot.piirrä_pöydättävä_kortti = True
             else:
                 SiirtoAnimaatiot.piirrä_pöydättävä_kortti = False
+
 
 def siirrä_pöytään(n):
     sijX = SiirtoAnimaatiot.pöydättävä_kortti_sijX
@@ -527,7 +549,9 @@ def siirrä_nostopakkaan():
                 SiirtoAnimaatiot.pako_kortti2_sijY = sijY 
             case 2: 
                 SiirtoAnimaatiot.pako_kortti3_sijX = sijX 
-                SiirtoAnimaatiot.pako_kortti3_sijY = sijY   
+                SiirtoAnimaatiot.pako_kortti3_sijY = sijY
+                if Muuttujat.valittuHaaste == "ahtaatHuoneet" and sijX == kohdeX and sijY == kohdeY:
+                    SiirtoAnimaatiot.piirrä_pakokortit = False    
             case 3: 
                 SiirtoAnimaatiot.pako_kortti4_sijX = sijX 
                 SiirtoAnimaatiot.pako_kortti4_sijY = sijY
@@ -549,6 +573,7 @@ def piirrä_pelattava_kortti():
 
 # Piirretään pöytäyksen ajan ylimääräinen "haamukortti"    
 def piirrä_pöydättävä_kortti():
+
     if SiirtoAnimaatiot.piirrä_pöydättävä_kortti:
         try:
             kortti = SiirtoAnimaatiot.pöydättävä_kortti
@@ -620,24 +645,45 @@ def piirrä_jäänyt_kortti():
         SiirtoAnimaatiot.piirrä_jäänyt_kortti = False
     return    
 
+def piirrä_jäänyt_kortti2():
+
+    if abs(SiirtoAnimaatiot.jäänyt_kortti2_kohdeX - SiirtoAnimaatiot.jäänyt_kortti2_sijX) < nopeus:
+        SiirtoAnimaatiot.jäänyt_kortti2_sijX = SiirtoAnimaatiot.jäänyt_kortti2_kohdeX
+    else:
+        SiirtoAnimaatiot.jäänyt_kortti2_sijX -= nopeus
+
+    if SiirtoAnimaatiot.piirrä_jäänyt_kortti2:
+        SiirtoAnimaatiot.jäänyt_kortti2.image = KorttiKuvakkeet.valitse_kortin_kuvake(SiirtoAnimaatiot.jäänyt_kortti2)
+        SiirtoAnimaatiot.jäänyt_kortti2.rect.x = SiirtoAnimaatiot.jäänyt_kortti2_sijX
+        SiirtoAnimaatiot.jäänyt_kortti2.rect.y = SiirtoAnimaatiot.jäänyt_kortti2_sijY
+        SiirtoAnimaatiot.jäänyt_kortti2.piirrä(POHJA)
+
+    if SiirtoAnimaatiot.jäänyt_kortti2_sijX == SiirtoAnimaatiot.jäänyt_kortti2_kohdeX:
+        SiirtoAnimaatiot.piirrä_jäänyt_kortti2 = False
+    return    
+
 def piirrä_pakokortit():
     if SiirtoAnimaatiot.piirrä_pakokortit:
-
-        SiirtoAnimaatiot.pako_kortti1.rect.x = SiirtoAnimaatiot.pako_kortti1_sijX
-        SiirtoAnimaatiot.pako_kortti1.rect.y = SiirtoAnimaatiot.pako_kortti1_sijY
-        SiirtoAnimaatiot.pako_kortti1.piirrä(POHJA)
         
-        SiirtoAnimaatiot.pako_kortti2.rect.x = SiirtoAnimaatiot.pako_kortti2_sijX
-        SiirtoAnimaatiot.pako_kortti2.rect.y = SiirtoAnimaatiot.pako_kortti2_sijY
-        SiirtoAnimaatiot.pako_kortti2.piirrä(POHJA)
+        if SiirtoAnimaatiot.piirrä_pakokortti1:
+            SiirtoAnimaatiot.pako_kortti1.rect.x = SiirtoAnimaatiot.pako_kortti1_sijX
+            SiirtoAnimaatiot.pako_kortti1.rect.y = SiirtoAnimaatiot.pako_kortti1_sijY
+            SiirtoAnimaatiot.pako_kortti1.piirrä(POHJA)
+        
+        if SiirtoAnimaatiot.piirrä_pakokortti2:
+            SiirtoAnimaatiot.pako_kortti2.rect.x = SiirtoAnimaatiot.pako_kortti2_sijX
+            SiirtoAnimaatiot.pako_kortti2.rect.y = SiirtoAnimaatiot.pako_kortti2_sijY
+            SiirtoAnimaatiot.pako_kortti2.piirrä(POHJA)
 
-        SiirtoAnimaatiot.pako_kortti3.rect.x = SiirtoAnimaatiot.pako_kortti3_sijX
-        SiirtoAnimaatiot.pako_kortti3.rect.y = SiirtoAnimaatiot.pako_kortti3_sijY
-        SiirtoAnimaatiot.pako_kortti3.piirrä(POHJA)
+        if SiirtoAnimaatiot.piirrä_pakokortti3:
+            SiirtoAnimaatiot.pako_kortti3.rect.x = SiirtoAnimaatiot.pako_kortti3_sijX
+            SiirtoAnimaatiot.pako_kortti3.rect.y = SiirtoAnimaatiot.pako_kortti3_sijY
+            SiirtoAnimaatiot.pako_kortti3.piirrä(POHJA)
 
-        SiirtoAnimaatiot.pako_kortti4.rect.x = SiirtoAnimaatiot.pako_kortti4_sijX
-        SiirtoAnimaatiot.pako_kortti4.rect.y = SiirtoAnimaatiot.pako_kortti4_sijY
-        SiirtoAnimaatiot.pako_kortti4.piirrä(POHJA)
+        if SiirtoAnimaatiot.piirrä_pakokortti4:
+            SiirtoAnimaatiot.pako_kortti4.rect.x = SiirtoAnimaatiot.pako_kortti4_sijX
+            SiirtoAnimaatiot.pako_kortti4.rect.y = SiirtoAnimaatiot.pako_kortti4_sijY
+            SiirtoAnimaatiot.pako_kortti4.piirrä(POHJA)
 
 def nollaa_korttien_paikat():
     SiirtoAnimaatiot.pöydättävä_kortti_sijX = SiirtoAnimaatiot.pöydättävä_kortti_oletusarvot[0]
@@ -664,6 +710,11 @@ def nollaa_korttien_paikat():
     SiirtoAnimaatiot.jäänyt_kortti_sijY = SiirtoAnimaatiot.jäänyt_kortti_oletusarvot[1]
     SiirtoAnimaatiot.jäänyt_kortti_kohdeX = SiirtoAnimaatiot.jäänyt_kortti_oletusarvot[2]
     SiirtoAnimaatiot.jäänyt_kortti_kohdeY = SiirtoAnimaatiot.jäänyt_kortti_oletusarvot[3]
+    
+    SiirtoAnimaatiot.jäänyt_kortti2_sijX = SiirtoAnimaatiot.jäänyt_kortti2_oletusarvot[0]
+    SiirtoAnimaatiot.jäänyt_kortti2_sijY = SiirtoAnimaatiot.jäänyt_kortti2_oletusarvot[1]
+    SiirtoAnimaatiot.jäänyt_kortti2_kohdeX = SiirtoAnimaatiot.jäänyt_kortti2_oletusarvot[2]
+    SiirtoAnimaatiot.jäänyt_kortti2_kohdeY = SiirtoAnimaatiot.jäänyt_kortti2_oletusarvot[3]
     
     SiirtoAnimaatiot.pako_kortti1_sijX = SiirtoAnimaatiot.pako_oletusarvotX[0]
     SiirtoAnimaatiot.pako_kortti1_sijY = SiirtoAnimaatiot.pako_oletusarvoY
@@ -786,6 +837,7 @@ class KorttiKuvakkeet:
 class KuvaValinnat:
     helppo_ovi = False
     vaikea_ovi = False
+    kauppa_info_laatikko = False
     kauppias1 = True
     kauppias2 = True
     kauppias3 = True
@@ -799,6 +851,7 @@ class SiirtoAnimaatiot:
     vanha_ase = Ase()
     vanha_vihu = Kortti()
     jäänyt_kortti = Kortti()
+    jäänyt_kortti2 = Kortti()
     pako_kortti1 = Kortti()
     pako_kortti2 = Kortti()
     pako_kortti3 = Kortti()
@@ -810,8 +863,13 @@ class SiirtoAnimaatiot:
     piirrä_vanha_ase = False
     piirrä_vanha_vihu = False
     piirrä_jäänyt_kortti = False
+    piirrä_jäänyt_kortti2 = False
     piirrä_pakokortit = False
-    piirrä_liikettä = piirrä_pelattava_kortti or piirrä_pöydättävä_kortti or piirrä_vanha_ase or piirrä_vanha_vihu
+    piirrä_pakokortti1 = False
+    piirrä_pakokortti2 = False
+    piirrä_pakokortti3 = False
+    piirrä_pakokortti4 = False
+    piirrä_liikettä = piirrä_pelattava_kortti or piirrä_pöydättävä_kortti or piirrä_vanha_ase or piirrä_vanha_vihu or piirrä_pakokortit or piirrä_jäänyt_kortti
     lisää_aseen_päälle = False
     
     pöydättävä_kortti_oletusarvot = [25, 355, 475, 142]
@@ -843,6 +901,12 @@ class SiirtoAnimaatiot:
     jäänyt_kortti_sijY = jäänyt_kortti_oletusarvot[1]
     jäänyt_kortti_kohdeX = jäänyt_kortti_oletusarvot[2]
     jäänyt_kortti_kohdeY = jäänyt_kortti_oletusarvot[3]
+    
+    jäänyt_kortti2_oletusarvot = [175, 142, 175, 142]
+    jäänyt_kortti2_sijX = jäänyt_kortti_oletusarvot[0]
+    jäänyt_kortti2_sijY = jäänyt_kortti_oletusarvot[1]
+    jäänyt_kortti2_kohdeX = jäänyt_kortti_oletusarvot[2]
+    jäänyt_kortti2_kohdeY = jäänyt_kortti_oletusarvot[3]
     
     pako_oletusarvotX = [25, 175, 325, 475]
     pako_oletusarvoY = 142

@@ -1,11 +1,17 @@
 from muuttujat import Muuttujat
-import pygame
+from haasteet import haasteet
+import pygame, random
 
 class Kauppias():
     sija = 1
     tila = "odottaa"
     hinta = 0
     toiminto = ""
+    haaste = None
+    
+    info_otsikko = ""
+    info_rivi1 = ""
+    info_rivi2 = ""
     
     def __init__(self, sija):
         super().__init__()
@@ -17,12 +23,17 @@ class Kauppias():
             self.hinta = 2
             self.toiminto = "kasvataPunaisia"
             self.rect.center = (110, 200)
+            self.info_otsikko = "Kasvata punaisia kortteja"
+            self.info_rivi1 = "Kasvata kaikkia herttoja ja ruutuja yhdellä."
             
         elif sija == 2:            
             self.hinta = 1
             
             if True or Muuttujat.HP <= Muuttujat.maxHP / 2: # Poista True kun lumouksia lisätään
                 self.toiminto = "kasvataHP"
+                self.info_otsikko = "Kasvata maksimiterveyttä ja parannu"
+                self.info_rivi1 = "Kasvata maksimiterveyttäsi kolmella terveyspisteellä"
+                self.info_rivi2 = "ja parannu täysiin terveyspisteisiin."
                 
             else: self.toiminto = "lumoaPunaisia"
             
@@ -31,10 +42,18 @@ class Kauppias():
         elif sija == 3:
             self.hinta = 0
             
-            if Muuttujat.haasteOtettu: self.toiminto = "tarjoaKirous"
-            else: self.toiminto = "tarjoaHaaste"
+            if False and Muuttujat.haasteOtettu: self.toiminto = "tarjoaKirous" # Poista False kun kirouksia lisätään
             
-            self.rect.center = (500, 185)
+            else: 
+                self.toiminto = "tarjoaHaaste"
+                
+                # Kauppias arpoo haasteen listalta
+                self.haaste = haasteet[random.randrange(len(haasteet))]
+                Muuttujat.tarjottuHaaste = self.haaste
+                self.info_otsikko = self.haaste.nimi + ": Seuraavassa pelissä"
+                self.info_rivi1 = self.haaste.kuvaus1 + " " + self.haaste.kuvaus2
+            
+            self.rect.center = (500, 246)
             
         else: 
             if (len(Muuttujat.esineet) == 1 and Muuttujat.helmiä == 0) or len(Muuttujat.esineet) == 2:
@@ -47,9 +66,33 @@ class Kauppias():
                 
             self.rect.center = (700, 201)
                 
-    def muuta_kuva(self):
-        self.image = pygame.image.load("kuvat/kauppiaat" + self.sija + self.tila)
-        self.rect = self.image.get_rect()
+    def vaihda_tila(self, tila = "odottaa"):
+        
+        if self.tila != "myyty":
+            self.tila = tila
+            self.image = pygame.image.load("kuvat/kauppiaat/kauppias" + str(self.sija) + self.tila + ".png")
+            self.rect = self.image.get_rect()
+            
+            if self.sija == 1:
+                if self.tila == "odottaa": self.rect.center = (110, 200)
+                elif self.tila == "huomio": self.rect.center = (108, 232)
+                else: self.rect.center = (108, 198)
+                
+            if self.sija == 2:
+                if self.tila == "odottaa": self.rect.center = (300, 257)
+                elif self.tila == "huomio": self.rect.center = (300, 250)
+                else: self.rect.center = (300, 342)
+                
+            if self.sija == 3:
+                if self.tila == "odottaa": self.rect.center = (500, 246)
+                elif self.tila == "huomio": self.rect.center = (500, 236)
+                else: self.rect.center = (500, 256)
+                
+            if self.sija == 4:
+                if self.tila == "odottaa": self.rect.center = (700, 201)
+                elif self.tila == "huomio": self.rect.center = (110, 200)
+                else: self.rect.center = (110, 200)
+
     
     def asioi(self):
         
@@ -68,6 +111,10 @@ class Kauppias():
 
                 Muuttujat.maxHP += 3
                 Muuttujat.HP = Muuttujat.maxHP
+                
+            case "tarjoaHaaste":
+                
+                Muuttujat.valittuHaaste = self.haaste
                 
         return True
 
