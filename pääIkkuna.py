@@ -28,6 +28,7 @@ opastus_tausta = Taustakuva("opastusTausta")
 tekijät_tausta = Taustakuva("tekijätTausta")
 valitsetyrmä_tausta = Taustakuva("tyrmävalintaTausta")
 kauppa_tausta = Taustakuva("kauppaTausta")
+seikkailu_tausta = Taustakuva("seikkailuTausta")
 
 #Päävalikon napit
 seikkailu_nappi = Nappi("seikkailu")
@@ -59,6 +60,7 @@ kauppias4_nappi = Nappi("kauppias")
 kauppias1_nappi.rect.center = (107, 415)
 kauppias2_nappi.rect.center = (301, 415)
 kauppias3_nappi.rect.center = (495, 415)
+kauppias4_nappi.rect.center = (689, 415)
 
 viimeisin_lyöty = Kortti()
 
@@ -80,6 +82,12 @@ valitsetyrmä_tekstirivi2 = Teksti()
 vaikeusAsteInfo = Teksti()
 valittuHaasteInfo = Teksti()
 valittuHaasteLisäinfo = Teksti()
+esine1_otsikko = Teksti()
+esine2_otsikko = Teksti()
+esine1_teksti = Teksti()
+esine2_teksti = Teksti()
+
+
 helmiä_teksti = Teksti()
 kauppias1_teksti = Teksti()
 kauppias1_hinta = Teksti()
@@ -204,12 +212,12 @@ def piirrä_napit(n = 2):
 
 def piirrä_tekstit(pakka=None):
     if pakka != None:
-        
+    
         hp_tausta.päivitä_teksti(str(Muuttujat.HP), 92, MUSTA)
         hp_tausta.rect = hp_tausta.text.get_rect()
         hp_tausta.rect.center = (260, 430)
-        hp_tausta.piirrä(POHJA)        
-        hp_teksti.päivitä_teksti(str(Muuttujat.HP), 88, VALKOINEN)
+        hp_tausta.piirrä(POHJA)           
+        hp_teksti.päivitä_teksti(str(Muuttujat.HP), 88, VALKOINEN)    
         hp_teksti.rect = hp_teksti.text.get_rect()
         hp_teksti.rect.center = (260, 430)
         hp_teksti.piirrä(POHJA)
@@ -223,29 +231,60 @@ def piirrä_tekstit(pakka=None):
         maxhp_teksti.rect.center = (260, 480)
         maxhp_teksti.piirrä(POHJA)
         
-        pakka_tausta.päivitä_teksti(str(len(pakka)), 92, MUSTA)
-        pakka_tausta.rect = pakka_tausta.text.get_rect()
-        pakka_tausta.rect.center = (90, 440)
-        pakka_tausta.piirrä(POHJA)        
-        pakka_teksti.päivitä_teksti(str(len(pakka)), 88, VALKOINEN)
-        pakka_teksti.rect = pakka_teksti.text.get_rect()
-        pakka_teksti.rect.center = (90, 440)
-        pakka_teksti.piirrä(POHJA)
+        # Valkoisella taustalla käänteiset värit
+        if ((len(Muuttujat.esineet) > 0 and Muuttujat.esineet[0].id == "lyhty") or (len(Muuttujat.esineet) > 1 and Muuttujat.esineet[1].id == "lyhty")):     
+            pakka_tausta.päivitä_teksti(str(len(pakka)), 92, VALKOINEN)
+            pakka_tausta.rect = pakka_tausta.text.get_rect()
+            pakka_tausta.rect.center = (90, 440)
+            pakka_tausta.piirrä(POHJA)
+                    
+            pakka_teksti.päivitä_teksti(str(len(pakka)), 88, MUSTA)
+            pakka_teksti.rect = pakka_teksti.text.get_rect()
+            pakka_teksti.rect.center = (90, 440)
+            pakka_teksti.piirrä(POHJA)
+            
+        else:
+            pakka_tausta.päivitä_teksti(str(len(pakka)), 92, MUSTA)
+            pakka_tausta.rect = pakka_tausta.text.get_rect()
+            pakka_tausta.rect.center = (90, 440)
+            pakka_tausta.piirrä(POHJA)
+                    
+            pakka_teksti.päivitä_teksti(str(len(pakka)), 88, VALKOINEN)
+            pakka_teksti.rect = pakka_teksti.text.get_rect()
+            pakka_teksti.rect.center = (90, 440)
+            pakka_teksti.piirrä(POHJA)
         
         if Muuttujat.skene == "Seikkailu":
-            vaikeusAsteInfo.rect.center = (120, 30)
+            vaikeusAsteInfo.rect.center = (120, 20)
             infoFontti = "Dubai"
             infoFonttiKoko = 28
             vaikeusAsteInfo.päivitä_teksti("Vaikeusaste: " + str(Muuttujat.vaikeusaste), fontti=infoFontti, fonttikoko=infoFonttiKoko)
             vaikeusAsteInfo.piirrä(POHJA)
             
             if Muuttujat.valittuHaaste != None:
-                valittuHaasteInfo.rect.center = (120, 60)
+                valittuHaasteInfo.rect.center = (120, 50)
                 valittuHaasteInfo.päivitä_teksti("Haaste: " + Muuttujat.valittuHaaste.nimi, fontti=infoFontti, fonttikoko=20)
                 valittuHaasteInfo.piirrä(POHJA)
-                valittuHaasteLisäinfo.rect.center = (120, 90)
-                valittuHaasteLisäinfo.päivitä_teksti("Tässä pelissä "+ Muuttujat.valittuHaaste.kuvaus1 + " " + Muuttujat.valittuHaaste.kuvaus2, fontti="Arial", fonttikoko= 12)
+                valittuHaasteLisäinfo.rect.center = (120, 80)
+                valittuHaasteLisäinfo.päivitä_teksti("Tässä pelissä "+ Muuttujat.valittuHaaste.kuvaus1 + " " + Muuttujat.valittuHaaste.kuvaus2, fontti="Arial", fonttikoko= 16)
                 valittuHaasteLisäinfo.piirrä(POHJA)
+                
+            if len(Muuttujat.esineet) > 0:
+                esine1_otsikko.rect.center = (130, 565)
+                esine1_otsikko.päivitä_teksti("Esine 1: " + Muuttujat.esineet[0].nimi, fontti="Arial", fonttikoko= 24, väri=PUNAINEN)
+                esine1_otsikko.piirrä(POHJA)
+                esine1_teksti.rect.center = (130, 590)
+                esine1_teksti.päivitä_teksti(Muuttujat.esineet[0].kuvaus1 + " " + Muuttujat.esineet[0].kuvaus2, fontti="Arial", fonttikoko= 16, väri=PUNAINEN)
+                esine1_teksti.piirrä(POHJA)
+                
+                if len(Muuttujat.esineet) > 1:
+                    
+                    esine2_otsikko.rect.center = (510, 565)
+                    esine2_otsikko.päivitä_teksti("Esine 2: " + Muuttujat.esineet[1].nimi, fontti="Arial", fonttikoko= 24, väri=PUNAINEN)
+                    esine2_otsikko.piirrä(POHJA)
+                    esine2_teksti.rect.center = (510, 590)
+                    esine2_teksti.päivitä_teksti(Muuttujat.esineet[1].kuvaus1 + " " + Muuttujat.esineet[1].kuvaus2, fontti="Arial", fonttikoko= 16, väri=PUNAINEN)
+                    esine2_teksti.piirrä(POHJA)
                 
     
     if Muuttujat.skene == "ValitseTyrmä":
@@ -472,7 +511,7 @@ def siirrä_kohteeseen():
             SiirtoAnimaatiot.siirtyvä_kortti_sijX = sijX
             SiirtoAnimaatiot.siirtyvä_kortti_sijY = sijY
             
-            if not (SiirtoAnimaatiot.siirtyvä_kortti_sijX == kohdeX and SiirtoAnimaatiot.siirtyvä_kortti_sijY == kohdeY or (Muuttujat.valittuHaaste == "ahtaatHuoneet" and sijX == 353.0)):
+            if not (SiirtoAnimaatiot.siirtyvä_kortti_sijX == kohdeX and SiirtoAnimaatiot.siirtyvä_kortti_sijY == kohdeY or (Muuttujat.valittuHaaste.id == "ahtaatHuoneet")):
                 SiirtoAnimaatiot.piirrä_pöydättävä_kortti = True
             else:
                 SiirtoAnimaatiot.piirrä_pöydättävä_kortti = False
@@ -747,7 +786,7 @@ def piirrä_kortin_kehys(valinta):
                 sijY = 142
             case 5:
                 sijX = 640
-                sijY = 140
+                sijY = 142
             case 0:
                 return
         sijX -= 4; sijY -= 5

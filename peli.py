@@ -11,6 +11,7 @@ from pääIkkuna import *
 from äänet import *
 from kauppias import *
 from haasteet import *
+from esineet import *
 
 pygame.init()
 FPS = 60
@@ -52,8 +53,21 @@ poistoPakka = []
 poyta = []
 nykyinenAse = []
 
-haaste = None
 kauppiaat = []
+
+def esinelöytyy(id):
+    
+    if Muuttujat.skene == "Seikkailu":
+    
+        if len(Muuttujat.esineet) > 0:
+            
+            if Muuttujat.esineet[0].id == id:
+                return True
+            
+            if len(Muuttujat.esineet) > 1:
+                if Muuttujat.esineet[1].id == id: return True
+            
+    return False
 
 # Yhden kortin siirtäminen nostopakasta pöydälle
 def paljasta_kortti():
@@ -171,7 +185,7 @@ def pelaa_kortti(i):
         
     korttejaPöydässä = laske_poytakortit()
     
-    if (korttejaPöydässä < 2 and (Muuttujat.skene != "Opastus" or Muuttujat.huonenro > 4 or korttejaPöydässä == 0 or Muuttujat.huonenro == 0)) or (korttejaPöydässä < 3 and Muuttujat.valittuHaaste != None and Muuttujat.valittuHaaste.id == "muuttuvaLabyrintti"):
+    if ((esinelöytyy("savukaapu") and (Muuttujat.huoneitaViimePaosta > 0 or Muuttujat.huonenro < 3)) or korttejaPöydässä < 2 and (Muuttujat.skene != "Opastus" or Muuttujat.huonenro > 4 or korttejaPöydässä == 0 or Muuttujat.huonenro == 0)) or (korttejaPöydässä < 3 and Muuttujat.valittuHaaste != None and Muuttujat.valittuHaaste.id == "muuttuvaLabyrintti"):
         Muuttujat.voiJuosta = True
     
     if korttejaPöydässä == 0:
@@ -245,7 +259,8 @@ def pakene_huoneesta():
     
     else: 
         Muuttujat.voiJuosta = False
-        Muuttujat.huoneitaViimePaosta = 0  
+        Muuttujat.huoneitaViimePaosta = 0 
+        Muuttujat.pakojaPeräkkäin += 1
     
     random.shuffle(poyta)
     poista_haamukortit()
@@ -253,11 +268,14 @@ def pakene_huoneesta():
     
     nostoPakka[:0] = poyta    
     poyta.clear()
-
+    
     toista_sfx("click")
     while SiirtoAnimaatiot.piirrä_pakokortit:
         siirrä_nostopakkaan()
         piirrä_kaikki()
+    
+    if esinelöytyy("teleportti"):
+        random.shuffle(nostoPakka)
     
     uusi_huone()
     return
@@ -295,9 +313,10 @@ def nollaa_seikkailu():
     Muuttujat.vaikeusaste = 0
     Muuttujat.helmiä = 1
     Muuttujat.punaistenTaso = 0
+    Muuttujat.amuletinVoima = 0
     Muuttujat.esineet.clear()
-    Muuttujat.valittuHaaste = None        
-        
+    Muuttujat.valittuHaaste = None       
+            
 def nollaa_peli():
 
     if not (Muuttujat.skene == "Seikkailu" or Muuttujat.skene == "ValitseTyrmä") or Muuttujat.tyrmävalinta == "Helppo": 
@@ -344,13 +363,15 @@ def aloita_peli():
             Muuttujat.vaikeusaste += 0.5
             Muuttujat.haasteOtettu == False
             Muuttujat.palkinto = 1
-            Muuttujat.valittuHaaste = None
+            
+            if not esinelöytyy("kartta"): Muuttujat.valittuHaaste = None
                     
         else:
             Muuttujat.vaikeusaste += 1 
             Muuttujat.palkinto = 2
-            if Muuttujat.valittuHaaste != None:
-                Muuttujat.palkinto += 1
+            
+        if Muuttujat.valittuHaaste != None:
+            Muuttujat.palkinto += 1
         
         for m in maat:
             for a in range(korttienMaara[m]):
@@ -361,6 +382,10 @@ def aloita_peli():
                     uusiKortti.luo_kortti(m, kortinSuuruus)
                 else: 
                     kortinSuuruus = min(a + 2 + Muuttujat.punaistenTaso, 20)
+                    
+                    if m == "ruutu" and esinelöytyy("amuletti"):
+                        kortinSuuruus = min(kortinSuuruus + Muuttujat.amuletinVoima, 20)
+                    
                     uusiKortti.luo_kortti(m, kortinSuuruus)
                 nostoPakka.append(uusiKortti)
         
@@ -372,6 +397,15 @@ def aloita_peli():
                 
         random.shuffle(nostoPakka)
         Muuttujat.huonenro = 1
+        
+        if esinelöytyy("magneetti"):
+            i = -1
+            while len(nykyinenAse) == 0:
+                if nostoPakka[i].maa == "ruutu":
+                    nykyinenAse.append(nostoPakka[i].vaikutus())
+                    nostoPakka.pop(i)
+                    Muuttujat.voiJuosta = True                    
+                else: i -= 1
     
     elif Muuttujat.skene == "Opastus":
         # Pelaaja käy läpi käsikirjoitetun opastuskierroksen
@@ -399,6 +433,9 @@ def uusi_huone():
     
     Muuttujat.huonenro += 1
     Muuttujat.voiParantua = True
+    
+    if Muuttujat.voiJuosta:
+        Muuttujat.pakojaPeräkkäin = 0
     
     SiirtoAnimaatiot.piirrä_pelattava_kortti = False  
     nollaa_korttien_paikat() 
@@ -436,10 +473,16 @@ def uusi_huone():
     
     if Muuttujat.valittuHaaste != None and Muuttujat.valittuHaaste.id == "tulvivaLattia" and Muuttujat.huoneitaViimePaosta < 2 and Muuttujat.huonenro > 3:
         Muuttujat.voiJuosta = False
+        
+    if (esinelöytyy("siivet") or (Muuttujat.valittuHaaste != None and Muuttujat.valittuHaaste.id == "ahtaatHuoneet")) and Muuttujat.pakojaPeräkkäin < 2:
+        Muuttujat.voiJuosta = True
+    elif esinelöytyy("siivet") and (Muuttujat.valittuHaaste != None and Muuttujat.valittuHaaste.id == "ahtaatHuoneet") and Muuttujat.pakojaPeräkkäin < 3:
+        Muuttujat.voiJuosta = True
             
     SiirtoAnimaatiot.piirrä_pöydättävä_kortti = False
 
-# Kauppaan siirryttäessä valitaan neljä kauppiasta pelitilanteen mukaan
+# Kauppaan siirryttäessä valitaan neljä kauppiasta pelitilanteen mukaan.
+# Kauppiaiden myymät lumoukset, haasteet, kiroukset ja esineet arvotaan.
 def valitse_kauppiaat():        
         
     if Muuttujat.HP < Muuttujat.maxHP / 2:
@@ -455,7 +498,7 @@ def valitse_kauppiaat():
     KuvaValinnat.kauppias1 = True      
     KuvaValinnat.kauppias2 = True   
     KuvaValinnat.kauppias3 = True   
-    KuvaValinnat.kauppias4 = True     
+    KuvaValinnat.kauppias4 = True      
 
 def palaa_takaisin():
     skene = Muuttujat.skene
@@ -644,6 +687,16 @@ def peli_loop():
                             
                         else:
                             toista_sfx("denied")
+                            
+                    elif kauppias4_nappi.rect.collidepoint(pygame.mouse.get_pos()) and KuvaValinnat.kauppias4:
+                        
+                        if kauppiaat[3].asioi():
+                            toista_sfx("click")
+                            kauppiaat[3].vaihda_tila("myyty")
+                            KuvaValinnat.kauppias4 = False
+                            
+                        else:
+                            toista_sfx("denied")
 
                     elif jatka_nappi.rect.collidepoint(pygame.mouse.get_pos()):                        
                         mask = pygame.mask.from_surface(jatka_nappi.image)
@@ -687,6 +740,15 @@ def peli_loop():
                             
                             if kauppiaat[2].tila != "myyty":
                                 KuvaValinnat.kauppa_info_laatikko = True
+                                
+                    elif kauppias4_nappi.rect.collidepoint(pygame.mouse.get_pos()):
+                            kauppiaat[0].vaihda_tila("odottaa")
+                            kauppiaat[1].vaihda_tila("odottaa")
+                            kauppiaat[2].vaihda_tila("odottaa")
+                            kauppiaat[3].vaihda_tila("huomio")
+                            
+                            if kauppiaat[3].tila != "myyty":
+                                KuvaValinnat.kauppa_info_laatikko = True
                             
                     else:
                         kauppiaat[0].vaihda_tila("odottaa")
@@ -729,7 +791,7 @@ def peli_loop():
                                                     
                     elif event.key == K_5 and not Muuttujat.peliOhi:
                         valinta = 5
-                        if korttejaPöydässä == Muuttujat.huoneenKoko and Muuttujat.voiJuosta and (Muuttujat.skene != "Opastus" or Muuttujat.huonenro > 1):
+                        if korttejaPöydässä > 1 and Muuttujat.voiJuosta and (Muuttujat.skene != "Opastus" or Muuttujat.huonenro > 1):
                             pakene_huoneesta()
                             
                         elif korttejaPöydässä < 2 and (Muuttujat.skene != "Opastus" or Muuttujat.huonenro > 4 or korttejaPöydässä == 0 or Muuttujat.huonenro == 0):
@@ -777,7 +839,8 @@ def peli_loop():
                         valinta = -1
 
                     if pääIkkuna.juokse_nappi.rect.collidepoint(pygame.mouse.get_pos()):
-                        if korttejaPöydässä == Muuttujat.huoneenKoko and Muuttujat.voiJuosta and (Muuttujat.skene != "Opastus" or Muuttujat.huonenro > 1):
+                        if korttejaPöydässä > 1 and Muuttujat.voiJuosta and (Muuttujat.skene != "Opastus" or Muuttujat.huonenro > 1):
+                            toista_sfx("click")
                             pakene_huoneesta()
                             
                         elif korttejaPöydässä < 2 and (Muuttujat.skene != "Opastus" or Muuttujat.huonenro > 4 or korttejaPöydässä == 0 or Muuttujat.huonenro == 0):
@@ -938,6 +1001,27 @@ def piirrä_kaikki():
             kauppias3_hinta.rect.center = (550, 450)
             kauppias3_hinta.piirrä(POHJA)
             
+        if KuvaValinnat.kauppias4: 
+            kauppias4_nappi.piirrä(POHJA)
+                        
+            if kauppiaat[3].toiminto == "myyEsine":
+                kauppias4_teksti.rect.center = (740, 400)
+                kauppias4_teksti.päivitä_teksti("Osta esine",24)
+                kauppias4_teksti.piirrä(POHJA)
+                
+                kauppias4_hinta.päivitä_teksti("Hinta: " + str(kauppiaat[3].hinta), 24)
+                kauppias4_hinta.rect.center = (740, 450)
+                kauppias4_hinta.piirrä(POHJA)
+                
+            else: 
+                kauppias4_teksti.rect.center = (740, 400)
+                kauppias4_teksti.päivitä_teksti("Vaihda esine",24)
+                kauppias4_teksti.piirrä(POHJA)
+                
+                kauppias4_hinta.päivitä_teksti("Hinta: " + str(kauppiaat[3].hinta), 24)
+                kauppias4_hinta.rect.center = (740, 450)
+                kauppias4_hinta.piirrä(POHJA)
+            
             
         jatka_nappi.piirrä(POHJA)
         
@@ -961,6 +1045,7 @@ def piirrä_kaikki():
                 kauppias_info_rivi2.päivitä_teksti(kauppias.info_rivi2, 24)
                 kauppias_info_rivi2.rect.center = (300, 90)
                 kauppias_info_rivi2.piirrä(POHJA)
+                
         
         piirrä_napit(1)
 
@@ -969,7 +1054,7 @@ def piirrä_kaikki():
 
         if skene == "Pikapeli": pikapeli_tausta.piirrä(POHJA)
         elif skene == "Opastus": opastus_tausta.piirrä(POHJA)
-        elif skene == "Seikkailu": pikapeli_tausta.piirrä(POHJA) # Seikkailu-tausta kehitteillä
+        elif skene == "Seikkailu": seikkailu_tausta.piirrä(POHJA) # Seikkailu-tausta kehitteillä
         
         if not Muuttujat.peliOhi:
             
@@ -994,7 +1079,24 @@ def piirrä_kaikki():
                 piirrä_ase(nykyinenAse)
             
             if len(nostoPakka) > 0:
-                piirrä_nostopakka()
+                
+                if esinelöytyy("lyhty"):
+                    
+                    if not piirrä_pöydättävä_kortti or len(poyta) == Muuttujat.huoneenKoko:
+                        nostoPakka[-1].image = KorttiKuvakkeet.valitse_kortin_kuvake(nostoPakka[-1])
+                        nostoPakka[-1].rect.x = 25
+                        nostoPakka[-1].rect.y = 355
+                        nostoPakka[-1].piirrä(POHJA)
+                        
+                    elif len(nostoPakka) > 1: 
+                        nostoPakka[-2].image = KorttiKuvakkeet.valitse_kortin_kuvake(nostoPakka[-2])
+                        nostoPakka[-2].rect.x = 25
+                        nostoPakka[-2].rect.y = 355
+                        nostoPakka[-2].piirrä(POHJA)
+                    
+                else: piirrä_nostopakka()
+                
+                
             
             if nykyinenAse.__len__() > 1:
                 i = -1
@@ -1016,7 +1118,7 @@ def piirrä_kaikki():
             
             if korttejaPöydässä < 2 and (skene != "Opastus" or Muuttujat.huonenro > 4 or korttejaPöydässä == 0 or Muuttujat.huonenro == 0):                
                 piirrä_juoksunappi("etene")
-            elif korttejaPöydässä == Muuttujat.huoneenKoko and Muuttujat.voiJuosta and (skene != "Opastus" or Muuttujat.huonenro > 1):
+            elif korttejaPöydässä > 1 and Muuttujat.voiJuosta and (skene != "Opastus" or Muuttujat.huonenro > 1):
                 piirrä_juoksunappi("pakene")
             else:
                 piirrä_juoksunappi("taistele")

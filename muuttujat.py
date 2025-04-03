@@ -26,8 +26,10 @@ class Muuttujat():
     helmiä = 1                  # Seikkailu-tilan valuutta
     haasteOtettu = False        # Ruutu-kauppiaan vaihtelu riippuu pelaajan valinnoista
     punaistenTaso = 0           # Jokainen taso kasvattaa pakan punaisia kortteja yhdellä
+    amuletinVoima = 0           # Jokainen taso kasvattaa pakan aseita yhdellä
     palkinto = 1                # Saadut helmet tyrmän jälkeen
     esineet = []
     tarjottuHaaste = None
     valittuHaaste = None
+    pakojaPeräkkäin = 0
     

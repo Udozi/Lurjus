@@ -1,6 +1,7 @@
 from muuttujat import Muuttujat
 from haasteet import haasteet
-import pygame, random
+from esineet import mahdollisetEsineet
+import pygame, random, math
 
 class Kauppias():
     sija = 1
@@ -8,6 +9,7 @@ class Kauppias():
     hinta = 0
     toiminto = ""
     haaste = None
+    esine = None
     
     info_otsikko = ""
     info_rivi1 = ""
@@ -49,6 +51,10 @@ class Kauppias():
                 
                 # Kauppias arpoo haasteen listalta
                 self.haaste = haasteet[random.randrange(len(haasteet))]
+                
+                if self.haaste.id == "palkkiometsästäjä":
+                    self.haaste.kuvaus2 = str(min(20, 15 + math.floor(Muuttujat.vaikeusaste))) + " suuruinen vihollinen."
+                
                 Muuttujat.tarjottuHaaste = self.haaste
                 self.info_otsikko = self.haaste.nimi + ": Seuraavassa pelissä"
                 self.info_rivi1 = self.haaste.kuvaus1 + " " + self.haaste.kuvaus2
@@ -56,15 +62,21 @@ class Kauppias():
             self.rect.center = (500, 246)
             
         else: 
+            self.esine = mahdollisetEsineet[random.randrange(len(mahdollisetEsineet))]
+            self.info_rivi1 = self.esine.kuvaus1 + " " + self.esine.kuvaus2
+            
             if (len(Muuttujat.esineet) == 1 and Muuttujat.helmiä == 0) or len(Muuttujat.esineet) == 2:
                 self.hinta = 0
                 self.toiminto = "vaihdaEsine"
+                self.info_otsikko = "Vaihda esine: " + self.esine.nimi 
+                self.info_rivi2 = "Vaihdossa annat esineen: " + Muuttujat.esineet[0].nimi
                 
             else:
                 self.hinta = 1
                 self.toiminto = "myyEsine"
-                
-            self.rect.center = (700, 201)
+                self.info_otsikko = "Osta esine: " + self.esine.nimi
+                               
+            self.rect.center = (700, 245)
                 
     def vaihda_tila(self, tila = "odottaa"):
         
@@ -89,9 +101,9 @@ class Kauppias():
                 else: self.rect.center = (500, 256)
                 
             if self.sija == 4:
-                if self.tila == "odottaa": self.rect.center = (700, 201)
-                elif self.tila == "huomio": self.rect.center = (110, 200)
-                else: self.rect.center = (110, 200)
+                if self.tila == "odottaa": self.rect.center = (700, 245)
+                elif self.tila == "huomio": self.rect.center = (700, 239)
+                else: self.rect.center = (700, 241)
 
     
     def asioi(self):
@@ -115,6 +127,14 @@ class Kauppias():
             case "tarjoaHaaste":
                 
                 Muuttujat.valittuHaaste = self.haaste
+                Muuttujat.amuletinVoima += 1
+                
+            case "myyEsine":                
+                Muuttujat.esineet.append(self.esine)
+                
+            case "vaihdaEsine":
+                Muuttujat.esineet.pop(0)
+                Muuttujat.esineet.append(self.esine)
                 
         return True
 
