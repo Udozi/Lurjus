@@ -511,7 +511,7 @@ def siirrä_kohteeseen():
             SiirtoAnimaatiot.siirtyvä_kortti_sijX = sijX
             SiirtoAnimaatiot.siirtyvä_kortti_sijY = sijY
             
-            if not (SiirtoAnimaatiot.siirtyvä_kortti_sijX == kohdeX and SiirtoAnimaatiot.siirtyvä_kortti_sijY == kohdeY or (Muuttujat.valittuHaaste.id == "ahtaatHuoneet")):
+            if not (SiirtoAnimaatiot.siirtyvä_kortti_sijX == kohdeX and SiirtoAnimaatiot.siirtyvä_kortti_sijY == kohdeY or (Muuttujat.valittuHaaste != None and Muuttujat.valittuHaaste.id == "ahtaatHuoneet")):
                 SiirtoAnimaatiot.piirrä_pöydättävä_kortti = True
             else:
                 SiirtoAnimaatiot.piirrä_pöydättävä_kortti = False
