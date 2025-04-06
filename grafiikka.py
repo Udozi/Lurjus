@@ -21,12 +21,14 @@ class Taustakuva(pygame.sprite.Sprite):
 class Nappi(pygame.sprite.Sprite):
     toiminto = ""
 
-    def __init__(self, toiminto):
+    def __init__(self, toiminto, näkyvä = True):
         super().__init__()
         self.toiminto = toiminto
-        latausnimi = "kuvat/napit/" + toiminto + "_nappi.png"
-        self.image = pygame.image.load(latausnimi).convert_alpha()
-        self.rect = self.image.get_rect()
+        
+        if näkyvä:           
+            latausnimi = "kuvat/napit/" + toiminto + "_nappi.png"
+            self.image = pygame.image.load(latausnimi).convert_alpha()
+            self.rect = self.image.get_rect()
         
     def päivitä_kuva(self, nimi):
         latausnimi = "kuvat/napit/" + str(nimi) + "_nappi.png"

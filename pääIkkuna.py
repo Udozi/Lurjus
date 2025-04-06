@@ -31,6 +31,8 @@ kauppa_tausta = Taustakuva("kauppaTausta")
 seikkailu_tausta = Taustakuva("seikkailuTausta")
 
 #Päävalikon napit
+sano_lurjus_nappi = Nappi("sanoLurjus",False)
+sano_lurjus_nappi.rect = pygame.Rect(200, 20, 400, 130)
 seikkailu_nappi = Nappi("seikkailu")
 pikapeli_nappi = Nappi("pikapeli")
 opastus_nappi = Nappi("opastus")

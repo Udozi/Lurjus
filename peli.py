@@ -593,12 +593,18 @@ def peli_loop():
                     elif asetukset_nappi.rect.collidepoint(pygame.mouse.get_pos()):
                         pääIkkuna.Efektit.valikko_iso = False
                         pääIkkuna.Efektit.valikko_hover = 0 #2 Ei käytössä
+                        
+                    elif sano_lurjus_nappi.rect.collidepoint(pygame.mouse.get_pos()) and not pygame.mixer.get_busy():
+                        n = random.randrange(1,9)
+                        äänenNimi = "lurjus" + str(n)
+                        toista_sfx(äänenNimi)
                                         
                     elif lopeta_nappi.rect.collidepoint(pygame.mouse.get_pos()):
                         pääIkkuna.Efektit.valikko_iso = False
                         pääIkkuna.Efektit.valikko_hover = 3
                     else:
                         pääIkkuna.Efektit.valikko_hover = 0
+                        
         
         elif Muuttujat.skene == "ValitseTyrmä" :
             for event in pygame.event.get():
