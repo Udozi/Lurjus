@@ -1,7 +1,19 @@
 from muuttujat import Muuttujat
 from haasteet import haasteet
 from esineet import mahdollisetEsineet
+from kortti import *
 import pygame, random, math
+
+mahdollisetAselumoukset = []
+mahdollisetJuomalumoukset = []
+mahdollisetKiroukset = []
+
+for lv in mahdollisetLisävoimat:
+    match lv.tyyppi:
+        case "lumousa":
+            mahdollisetAselumoukset.append(lv)
+        case "lumousp":
+            mahdollisetJuomalumoukset.append(lv)            
 
 class Kauppias():
     sija = 1
@@ -10,16 +22,20 @@ class Kauppias():
     toiminto = ""
     haaste = None
     esine = None
+    lumoukset = []
+    kiroukset = []
+    pakotaLisävoimaton = False
     
     info_otsikko = ""
     info_rivi1 = ""
     info_rivi2 = ""
     
-    def __init__(self, sija):
+    def __init__(self, sija, pakotaLisävoimaton = False):
         super().__init__()
         self.sija = sija
         self.image = pygame.image.load("kuvat/kauppiaat/kauppias" + str(self.sija) + self.tila + ".png")
         self.rect = self.image.get_rect()
+        self.pakotaLisävoimaton = pakotaLisävoimaton
         
         if sija == 1:    
             self.hinta = 2
@@ -30,21 +46,104 @@ class Kauppias():
             
         elif sija == 2:            
             self.hinta = 1
+            self.lumoukset.clear()
             
-            if True or Muuttujat.HP <= Muuttujat.maxHP / 2: # Poista True kun lumouksia lisätään
+            if Muuttujat.HP <= Muuttujat.maxHP / 2 or self.pakotaLisävoimaton: 
                 self.toiminto = "kasvataHP"
                 self.info_otsikko = "Kasvata maksimiterveyttä ja parannu"
                 self.info_rivi1 = "Kasvata maksimiterveyttäsi kolmella terveyspisteellä"
                 self.info_rivi2 = "ja parannu täysiin terveyspisteisiin."
                 
-            else: self.toiminto = "lumoaPunaisia"
+            else: 
+                self.toiminto = "lumoaPunaisia"
+                lumottaviaAseita = [0,1,2,3,4,5,6,7,8]
+                lumottaviaJuomia = [0,1,2,3,4,5,6,7,8]
+                lumotut = []
+                
+                for lumous in Muuttujat.aselumoukset:
+                    lumotut.append(lumous.indeksi)
+                    if lumotut.count(lumous.indeksi) > 1 and lumous.indeksi in lumottaviaAseita:
+                        lumottaviaAseita.remove(lumous.indeksi)
+                    
+                lumotut.clear()
+                
+                for lumous in Muuttujat.juomalumoukset:
+                    lumotut.append(lumous.indeksi)
+                    if lumotut.count(lumous.indeksi) > 1 and lumous.indeksi in lumottaviaJuomia:
+                        lumottaviaJuomia.remove(lumous.indeksi)
+                
+                lumousa = None
+                lumousa = random.choice(mahdollisetAselumoukset)
+                if len(lumottaviaAseita) == 0:
+                    self.tila = "virhe"
+                    return 
+                lumousa.indeksi = random.choice(lumottaviaAseita)
+                self.lumoukset.append(lumousa)
+                Muuttujat.aselumoukset.append(lumousa)
+                
+                lumousp = None
+                lumousp = random.choice(mahdollisetJuomalumoukset)
+                if len(lumottaviaJuomia) == 0:
+                    self.tila = "virhe"
+                    return
+                lumousp.indeksi = random.choice(lumottaviaJuomia)
+                self.lumoukset.append(lumousp)
+                Muuttujat.juomalumoukset.append(lumousp)
+                
+                self.info_otsikko = "Lumoa yksi ase ja taikajuoma"
+                self.info_rivi1 = "Aselumous: " + lumousa.nimi
+                self.info_rivi2 = "Juomalumous: " + lumousp.nimi
             
             self.rect.center = (300, 257)
             
         elif sija == 3:
             self.hinta = 0
+            print(self.pakotaLisävoimaton)
             
-            if False and Muuttujat.haasteOtettu: self.toiminto = "tarjoaKirous" # Poista False kun kirouksia lisätään
+            if Muuttujat.haasteOtettu and not self.pakotaLisävoimaton: 
+            
+                self.toiminto = "tarjoaKirouksia"
+                self.kiroukset.clear()
+                self.hinta = -1
+                kirottaviaVihollisia = [0,1,2,3,4,5,6,7,8,9,10,11,12]
+                kirotut = []
+                indeksilista = []
+                
+                while len(self.kiroukset) < 3 and len(kirottaviaVihollisia) > 0: 
+                    
+                    mahdollisetKiroukset.clear()
+                    
+                    for lv in mahdollisetLisävoimat:
+                        if lv.tyyppi == "kirous": mahdollisetKiroukset.append(lv)
+                    
+                    for kirous in Muuttujat.kiroukset:
+                        kirotut.append(kirous.indeksi)
+                        
+                        if kirotut.count(kirous.indeksi) > 1 and kirous.indeksi in kirottaviaVihollisia:
+                                kirottaviaVihollisia.remove(kirous.indeksi)
+                  
+                    if len(kirottaviaVihollisia) == 0:
+                        self.tila = "virhe"
+                        return
+                        
+                    elif len(kirottaviaVihollisia) < 3: 
+                        break
+                        
+                    valittuKirous = random.choice(mahdollisetKiroukset)
+                    valittuKirous.indeksi = random.choice(kirottaviaVihollisia)
+                    uusiKirous = Lisävoima(valittuKirous.indeksi, "kirous", valittuKirous.id, valittuKirous.nimi, valittuKirous.kuvaus1, valittuKirous.kuvaus2, valittuKirous.kohdemaa)
+                    
+                    # Estetään samojen kirousten arpominen samoille korteille
+                    if not (uusiKirous.indeksi, uusiKirous.nimi) in indeksilista:
+                        indeksilista.append((uusiKirous.indeksi, uusiKirous.nimi))
+                        self.kiroukset.append(uusiKirous)
+                    
+                    print("Valittu kirous: " + uusiKirous.nimi + " kortille " + uusiKirous.kohdemaa + str(uusiKirous.indeksi + 1))
+                    print(self.kiroukset)
+               
+                self.info_otsikko = "Ota vastaan kolme kirousta"
+                self.info_rivi1 = "Saat heti yhden helmen, mutta"
+                self.info_rivi2 = "jotkut viholliset vahvistuvat pysyvästi."
             
             else: 
                 self.toiminto = "tarjoaHaaste"
@@ -123,12 +222,21 @@ class Kauppias():
 
                 Muuttujat.maxHP += 3
                 Muuttujat.HP = Muuttujat.maxHP
+            
+            case "lumoaPunaisia":
+                
+                Muuttujat.aselumoukset.append(self.lumoukset[0])
+                Muuttujat.juomalumoukset.append(self.lumoukset[1])
                 
             case "tarjoaHaaste":
                 
                 Muuttujat.valittuHaaste = self.haaste
                 Muuttujat.amuletinVoima += 1
                 
+            case "tarjoaKirouksia":
+                
+                Muuttujat.kiroukset.extend(self.kiroukset)
+            
             case "myyEsine":                
                 Muuttujat.esineet.append(self.esine)
                 

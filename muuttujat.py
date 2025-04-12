@@ -32,4 +32,14 @@ class Muuttujat():
     tarjottuHaaste = None
     valittuHaaste = None
     pakojaPeräkkäin = 0
+    aseenVoimaBonus = 0
+    juomaVoimaBonus = 0
+    varasSuoja = False          # Varas (kirottu vihollinen) toimii vain PAKENE-nappia painettaessa (ei muuttuvan labyrintin paossa)
+    
+    johtajaViholliset = []
+    pilkkaavatViholliset = []
+    varasViholliset = []
+    aselumoukset = []
+    juomalumoukset = []
+    kiroukset = []
     

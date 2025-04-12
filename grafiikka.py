@@ -2,10 +2,13 @@ import os
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 import pygame, time 
 from pygame.locals import *
+pygame.font.init()
 
 VALKOINEN = (255, 255, 255)
 PUNAINEN = (255, 0, 0)
 MUSTA = (0, 0, 0)
+
+korttiFontti = pygame.font.SysFont("Dubai", 36, bold=True)
 
 class Taustakuva(pygame.sprite.Sprite):
     def __init__(self, nimi = "placeholder"):
@@ -60,15 +63,35 @@ class Teksti(pygame.sprite.Sprite):
     teksti = ""
     def __init__(self):
         super().__init__()
-        self.text = pygame.font.Font("freesansbold.ttf", 16).render("Tehtävänäsi on päihittää ilkeä", True, (0, 0, 0), (255, 255, 255))
+        self.text = pygame.font.SysFont("FreeSans", 16).render("Tehtävänäsi on päihittää ilkeä", True, (0, 0, 0), (255, 255, 255))
         self.rect = self.text.get_rect()
         self.rect.center = (120, 60)
 
-    def päivitä_teksti(self, teksti, fonttikoko = 16, väri = VALKOINEN, fontti = "freesansbold.ttf"):
-        self.text = pygame.font.SysFont(fontti, fonttikoko).render(teksti, False, väri)
+    def päivitä_teksti(self, teksti, fonttikoko = 16, väri = VALKOINEN, fontti = "freesansbold.ttf", sysfont = True):
+        
+        if sysfont:
+            self.text = pygame.font.SysFont(fontti, fonttikoko).render(teksti, False, väri)
+        else:
+            self.text = fontti.render(teksti, False, väri)
+        self.rect = self.text.get_rect()
 
     def piirrä(self, surface):
         surface.blit(self.text, self.rect)
+
+class LisävoimaKuvake():
+    
+    def __init__(self, nimi):
+        super().__init__()
+        latausnimi = "kuvat/lisävoimat/" + nimi + ".png"
+        self.image = pygame.image.load(latausnimi)
+        self.rect = self.image.get_rect()
+        
+    def piirrä(self, pohja, xpos = None, ypos = None):
+        
+        if xpos != None and ypos != None:
+            self.rect.center = (xpos, ypos)
+        
+        pohja.blit(self.image, self.rect)
 
 class Kehys(pygame.sprite.Sprite):
     def __init__(self, nimi = "kortti"):
