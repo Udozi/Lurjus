@@ -98,7 +98,6 @@ class Kauppias():
             
         elif sija == 3:
             self.hinta = 0
-            print(self.pakotaLisävoimaton)
             
             if Muuttujat.haasteOtettu and not self.pakotaLisävoimaton: 
             
@@ -107,7 +106,7 @@ class Kauppias():
                 self.hinta = -1
                 kirottaviaVihollisia = [0,1,2,3,4,5,6,7,8,9,10,11,12]
                 kirotut = []
-                indeksilista = []
+                nimilista = []
                 
                 while len(self.kiroukset) < 3 and len(kirottaviaVihollisia) > 0: 
                     
@@ -133,13 +132,10 @@ class Kauppias():
                     valittuKirous.indeksi = random.choice(kirottaviaVihollisia)
                     uusiKirous = Lisävoima(valittuKirous.indeksi, "kirous", valittuKirous.id, valittuKirous.nimi, valittuKirous.kuvaus1, valittuKirous.kuvaus2, valittuKirous.kohdemaa)
                     
-                    # Estetään samojen kirousten arpominen samoille korteille
-                    if not (uusiKirous.indeksi, uusiKirous.nimi) in indeksilista:
-                        indeksilista.append((uusiKirous.indeksi, uusiKirous.nimi))
+                    # Kauppias tekee joka kerta kolme eri kirousta
+                    if not uusiKirous.nimi in nimilista:
+                        nimilista.append(uusiKirous.nimi)
                         self.kiroukset.append(uusiKirous)
-                    
-                    print("Valittu kirous: " + uusiKirous.nimi + " kortille " + uusiKirous.kohdemaa + str(uusiKirous.indeksi + 1))
-                    print(self.kiroukset)
                
                 self.info_otsikko = "Ota vastaan kolme kirousta"
                 self.info_rivi1 = "Saat heti yhden helmen, mutta"

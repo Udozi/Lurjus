@@ -1100,6 +1100,16 @@ def peli_loop():
                                 KuvaValinnat.lisävoima2o = poyta[0].lisävoimat[1].nimi
                                 KuvaValinnat.lisävoima2t = poyta[0].lisävoimat[1].kuvaus1 + " " + poyta[0].lisävoimat[1].kuvaus2
                                 KuvaValinnat.lisävoima2 = True
+                    
+                    elif len(nykyinenAse) > 0 and (nykyinenAse[0].rect.collidepoint(pygame.mouse.get_pos()) or nykyinenAse[-1].rect.collidepoint(pygame.mouse.get_pos())):
+                        if len(nykyinenAse[0].lisävoimat) > 0:
+                            KuvaValinnat.lisävoima1o = nykyinenAse[0].lisävoimat[0].nimi
+                            KuvaValinnat.lisävoima1t = nykyinenAse[0].lisävoimat[0].kuvaus1 + " " + nykyinenAse[0].lisävoimat[0].kuvaus2
+                            KuvaValinnat.lisävoima1 = True
+                            if len(nykyinenAse[0].lisävoimat) > 1:
+                                KuvaValinnat.lisävoima2o = nykyinenAse[0].lisävoimat[1].nimi
+                                KuvaValinnat.lisävoima2t = nykyinenAse[0].lisävoimat[1].kuvaus1 + " " + nykyinenAse[0].lisävoimat[1].kuvaus2
+                                KuvaValinnat.lisävoima2 = True
                                 
                     elif pääIkkuna.juokse_nappi.rect.collidepoint(pygame.mouse.get_pos()) and (Muuttujat.voiJuosta):
                         pääIkkuna.Efektit.kortti_hover = 5
