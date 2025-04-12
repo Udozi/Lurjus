@@ -21,6 +21,7 @@ class Muuttujat():
     huoneenKoko = 4
     
     # Seikkailu-tilan muuttujat:
+    tyrmänro = 0
     tyrmävalinta = "Vaikea"     # Helppo/vaikea
     vaikeusaste = 0             # Jokainen taso kasvattaa pakan mustia kortteja yhdellä. Pyöristetään alaspäin.
     helmiä = 1                  # Seikkailu-tilan valuutta

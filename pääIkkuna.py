@@ -78,6 +78,7 @@ pisteet_teksti = Teksti()
 voitot_teksti = Teksti()
 voittoputki_teksti = Teksti()
 f1_teksti = Teksti()
+tyrmänro_teksti = Teksti()
 
 opastus_tekstirivi1 = Teksti()
 opastus_tekstirivi2 = Teksti()
@@ -269,6 +270,10 @@ def piirrä_tekstit(pakka=None):
             infoFonttiKoko = 28
             vaikeusAsteInfo.päivitä_teksti("Vaikeusaste: " + str(Muuttujat.vaikeusaste), fontti=infoFontti, fonttikoko=infoFonttiKoko)
             vaikeusAsteInfo.piirrä(POHJA)
+            
+            tyrmänro_teksti.päivitä_teksti(str(Muuttujat.tyrmänro),fonttikoko=36,fontti="Impact",väri=PUNAINEN)
+            tyrmänro_teksti.rect.center = (700, 35)
+            tyrmänro_teksti.piirrä(POHJA)
             
             if Muuttujat.valittuHaaste != None:
                 

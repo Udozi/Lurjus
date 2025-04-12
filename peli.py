@@ -57,6 +57,7 @@ nykyinenAse = []
 
 kauppiaat = []
 vaanivat = []
+pääviholliset = []
 
 def esinelöytyy(id):
     
@@ -377,6 +378,7 @@ def peli_ohi():
 
 def nollaa_seikkailu():
     
+    Muuttujat.tyrmänro = 0
     Muuttujat.skene = "Kauppa"
     Muuttujat.maxHP = 20
     Muuttujat.HP = Muuttujat.maxHP
@@ -388,7 +390,9 @@ def nollaa_seikkailu():
     Muuttujat.valittuHaaste = None
     Muuttujat.aselumoukset.clear()
     Muuttujat.juomalumoukset.clear()
-    Muuttujat.kiroukset.clear()       
+    Muuttujat.kiroukset.clear()  
+    Muuttujat.haasteOtettu = False 
+    pääviholliset.clear()    
             
             
 def nollaa_peli():
@@ -431,6 +435,8 @@ def aloita_peli():
     
     elif Muuttujat.skene == "Seikkailu":
         
+        Muuttujat.tyrmänro += 1
+        
         if Muuttujat.valittuHaaste != None and Muuttujat.valittuHaaste.id == "ahtaatHuoneet": Muuttujat.huoneenKoko = 3
         else: Muuttujat.huoneenKoko = 4
         
@@ -458,7 +464,7 @@ def aloita_peli():
                     
                     for kirous in Muuttujat.kiroukset:
                         if kirous.indeksi == uusiKortti.indeksi and kirous not in uusiKortti.lisävoimat and m == kirous.kohdemaa:
-                            uusiKortti.lisävoimat.append(kirous)  
+                            uusiKortti.lisävoimat.append(kirous)
                                                   
                     
                 else: 
@@ -480,7 +486,25 @@ def aloita_peli():
                                 uusiKortti.lisävoimat.append(lumous) 
                      
                 nostoPakka.append(uusiKortti)
-                
+        
+        # Joka 5. peli pakkaan lisätään kirottu päävihollinen
+        if Muuttujat.tyrmänro % 5 == 0:
+            if Muuttujat.tyrmänro % 10 == 0:
+                päävihollinen = Kortti("pata", math.floor(15 + Muuttujat.vaikeusaste), False, 13)
+            else:    
+                päävihollinen = Kortti("pata", math.floor(15 + Muuttujat.vaikeusaste), False, 13)
+            kirottu = False
+            
+            while not kirottu:
+                kirous = random.choice(mahdollisetKiroukset)
+                pomokirous = Lisävoima(13,"kirous",kirous.id,kirous.nimi,kirous.kuvaus1,kirous.kuvaus2,kirous.kohdemaa)
+                if kirous.kohdemaa == päävihollinen.maa:
+                    kirottu = True
+            päävihollinen.lisävoimat.append(pomokirous)
+            pääviholliset.append(päävihollinen)
+            Muuttujat.palkinto += 1
+        
+        nostoPakka.extend(pääviholliset)        
         
         if Muuttujat.valittuHaaste != None and Muuttujat.valittuHaaste.id == "palkkiometsästäjä":
             kortinSuuruus = 14 + math.floor(Muuttujat.vaikeusaste)
