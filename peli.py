@@ -253,7 +253,7 @@ def pelaa_kortti(i):
                 Muuttujat.häviöt += 1
                 Muuttujat.voittoputki = 0
         
-        elif Muuttujat.HP == Muuttujat.maxHP: 
+        elif Muuttujat.HP >= Muuttujat.maxHP: 
             Muuttujat.superVoitot += 1
             Muuttujat.voittoputki += 1
             Muuttujat.palkinto += 1
