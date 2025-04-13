@@ -18,7 +18,7 @@ class Esine():
 # Esineet ja niiden sijainti koodissa (#kommentti)
 esine1 = Esine("savukaapu","Savukaapu","Voit paeta kesken huoneen.") #pelaa_kortti
 esine2 = Esine("magneetti","Magneetti","Aloitat pelin satunnaisella","aseella nostopakasta.") #aloita_peli
-esine3 = Esine("teleportti","Teleportti","Pako huoneesta sekoittaa nostopinon.") #pakene_huoneesta
+esine3 = Esine("teleportti","Teleportti","Pako huoneesta sekoittaa nostopinon","ja poistaa sieltä vihollisen.") #pakene_huoneesta
 esine4 = Esine("lyhty","Lyhty","Nostopinon ylin kortti paljastetaan.") #paljasta_kortti
 esine5 = Esine("siivet","Siivet","Voit paeta kahdesti peräkkäin") #peli_loop
 esine6 = Esine("amuletti","Amuletti","Kasvata aseitasi +1 jokaista", "ottamaasi haastetta kohden.") #aloita_peli

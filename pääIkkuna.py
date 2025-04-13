@@ -288,21 +288,21 @@ def piirrä_tekstit(pakka=None):
             if len(Muuttujat.esineet) > 0:
                 
                 esine1_otsikko.päivitä_teksti("Esine 1: " + Muuttujat.esineet[0].nimi, fontti="Arial", fonttikoko= 24, väri=PUNAINEN)
-                esine1_otsikko.rect.center = (180, 565)
+                esine1_otsikko.rect.center = (200, 565)
                 esine1_otsikko.piirrä(POHJA)                
                                 
                 esine1_teksti.päivitä_teksti(Muuttujat.esineet[0].kuvaus1 + " " + Muuttujat.esineet[0].kuvaus2, fontti="Arial", fonttikoko= 16, väri=PUNAINEN)
-                esine1_teksti.rect.center = (180, 590)
+                esine1_teksti.rect.center = (200, 590)
                 esine1_teksti.piirrä(POHJA)
                 
                 if len(Muuttujat.esineet) > 1:
                     
                     esine2_otsikko.päivitä_teksti("Esine 2: " + Muuttujat.esineet[1].nimi, fontti="Arial", fonttikoko= 24, väri=PUNAINEN)
-                    esine2_otsikko.rect.center = (510, 565)
+                    esine2_otsikko.rect.center = (600, 565)
                     esine2_otsikko.piirrä(POHJA)
                     
                     esine2_teksti.päivitä_teksti(Muuttujat.esineet[1].kuvaus1 + " " + Muuttujat.esineet[1].kuvaus2, fontti="Arial", fonttikoko= 16, väri=PUNAINEN)
-                    esine2_teksti.rect.center = (510, 590)
+                    esine2_teksti.rect.center = (600, 590)
                     esine2_teksti.piirrä(POHJA)
                     
             if KuvaValinnat.lisävoima1:

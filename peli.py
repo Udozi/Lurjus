@@ -346,6 +346,13 @@ def pakene_huoneesta():
     toista_sfx("click")    
     if esinelöytyy("teleportti"):
         random.shuffle(nostoPakka)
+        
+        for k in nostoPakka:
+            if k.maa == "pata" or k.maa == "risti":
+                poistoPakka.append(k)
+                Muuttujat.viimeksiPelattu = k
+                nostoPakka.remove(k)
+                break
     
     uusi_huone()
     return
@@ -436,7 +443,7 @@ def aloita_peli():
     elif Muuttujat.skene == "Seikkailu":
         
         Muuttujat.tyrmänro += 1
-        
+     
         if Muuttujat.valittuHaaste != None and Muuttujat.valittuHaaste.id == "ahtaatHuoneet": Muuttujat.huoneenKoko = 3
         else: Muuttujat.huoneenKoko = 4
         
@@ -626,11 +633,15 @@ def uusi_huone():
 
 # Kauppaan siirryttäessä valitaan neljä kauppiasta pelitilanteen mukaan.
 # Kauppiaiden myymät lumoukset, haasteet, kiroukset ja esineet arvotaan.
-def valitse_kauppiaat():    
-        
+def valitse_kauppiaat():
+    
     if Muuttujat.HP < Muuttujat.maxHP / 2:
         Muuttujat.HP = math.floor(Muuttujat.maxHP / 2) 
     
+    #if Muuttujat.tyrmänro == 0:
+    #    Muuttujat.aselumoukset.clear()
+    #    Muuttujat.juomalumoukset.clear()
+   
     Muuttujat.valittuHaaste = None
     kauppiaat.clear()
     
@@ -641,13 +652,12 @@ def valitse_kauppiaat():
         else: 
             uusiKauppias = Kauppias(sija=i+1,pakotaLisävoimaton=True)
             kauppiaat.append(uusiKauppias)
-        
+ 
     KuvaValinnat.kauppias1 = True      
     KuvaValinnat.kauppias2 = True   
     KuvaValinnat.kauppias3 = True   
-    KuvaValinnat.kauppias4 = True      
-
-
+    KuvaValinnat.kauppias4 = True 
+    
 def tarkista_poyta():
     Muuttujat.johtajaViholliset.clear()
     Muuttujat.pilkkaavatViholliset.clear()
@@ -792,6 +802,7 @@ def peli_loop():
                         
         
         elif Muuttujat.skene == "ValitseTyrmä" :
+        
             for event in pygame.event.get():
 
                 if event.type == QUIT:
@@ -872,6 +883,13 @@ def peli_loop():
                     elif kauppias3_nappi.rect.collidepoint(pygame.mouse.get_pos()) and KuvaValinnat.kauppias3:
                         
                         if kauppiaat[2].asioi():
+                            if kauppiaat[2].toiminto == "tarjoaHaaste":
+                                for e in Muuttujat.esineet:
+                                    if e.id == "amuletti":
+                                        e.kuvaus2 = "ottamaasi haastetta kohden. (" + str(Muuttujat.amuletinVoima) + ")"
+                                if kauppiaat[3].esine.id == "amuletti":
+                                    kauppiaat[3].esine.kuvaus2 = "ottamaasi haastetta kohden. (" + str(Muuttujat.amuletinVoima) + ")"
+                                    kauppiaat[3].info_rivi1 = kauppiaat[3].esine.kuvaus1 + " " + kauppiaat[3].esine.kuvaus2
                             toista_sfx("click")
                             kauppiaat[2].vaihda_tila("myyty")
                             KuvaValinnat.kauppias3 = False

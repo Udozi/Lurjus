@@ -79,7 +79,6 @@ class Kauppias():
                     return 
                 lumousa.indeksi = random.choice(lumottaviaAseita)
                 self.lumoukset.append(lumousa)
-                Muuttujat.aselumoukset.append(lumousa)
                 
                 lumousp = None
                 lumousp = random.choice(mahdollisetJuomalumoukset)
@@ -88,7 +87,6 @@ class Kauppias():
                     return
                 lumousp.indeksi = random.choice(lumottaviaJuomia)
                 self.lumoukset.append(lumousp)
-                Muuttujat.juomalumoukset.append(lumousp)
                 
                 self.info_otsikko = "Lumoa yksi ase ja taikajuoma"
                 self.info_rivi1 = "Aselumous: " + lumousa.nimi
@@ -156,9 +154,20 @@ class Kauppias():
             
             self.rect.center = (500, 246)
             
-        else: 
-            self.esine = mahdollisetEsineet[random.randrange(len(mahdollisetEsineet))]
+        else:
+            
+            esinelista = []
+            for e in mahdollisetEsineet:                
+                if not e in Muuttujat.esineet:
+                    esinelista.append(e)
+            
+            self.esine = random.choice(esinelista)
+            if self.esine.id == "amuletti": 
+                self.esine.kuvaus2 = "ottamaasi haastetta kohden. (" + str(Muuttujat.amuletinVoima) + ")"
+            
             self.info_rivi1 = self.esine.kuvaus1 + " " + self.esine.kuvaus2
+            
+                
             
             if (len(Muuttujat.esineet) == 1 and Muuttujat.helmiä == 0) or len(Muuttujat.esineet) == 2:
                 self.hinta = 0
