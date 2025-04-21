@@ -442,6 +442,7 @@ def piirrä_pisteet(pisteet):
         peliohi_teksti.rect.center = (400, 200)
         peliohi_teksti.piirrä(POHJA)
         
+        kauppaan_nappi.päivitä_kuva("kauppaan")
         kauppaan_nappi.rect.center = (400, 350)
         kauppaan_nappi.piirrä(POHJA)
         

@@ -29,10 +29,10 @@ VALKOINEN = (255, 255, 255)
 # Pata (2-14) - Vihollinen (tekee sinuun vahinkoa)
 # Risti (2-14) - Vihollinen (ks. pata)
 korttienMaara = {
-    "ruutu": 1,
-    "hertta": 1,
-    "pata": 1,
-    "risti": 1
+    "ruutu": 9,
+    "hertta": 9,
+    "pata": 13,
+    "risti": 13
 }
 
 
