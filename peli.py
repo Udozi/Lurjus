@@ -334,18 +334,22 @@ def pakene_huoneesta():
         for v in Muuttujat.varasViholliset:
             varastettavia = ["hertta", "ruutu"]
             while len(varastettavia) > 0:
-                käänteinenNostopakka = nostoPakka
-                käänteinenNostopakka.reverse()
-                for k in käänteinenNostopakka:
-                    
+                
+                for i in range(len(nostoPakka) - 2):
+                    n = -(i+1)
+                    print(str(-n) + " " + str(len(nostoPakka) - 2))
+                    k = nostoPakka[n]
+                                        
                     if k.maa in varastettavia:
-                        viimeinen = nostoPakka.index(k) == len(nostoPakka) - 1
+                        
                         varastettavia.remove(k.maa)
                         Muuttujat.viimeksiPelattu = k
                         poistoPakka.append(k) 
                         nostoPakka.remove(k)                                               
-                        if viimeinen:
+
+                    if -n == len(nostoPakka) - 2:
                             varastettavia.clear()
+                            
     
     toista_sfx("click")    
     if esinelöytyy("teleportti"):
