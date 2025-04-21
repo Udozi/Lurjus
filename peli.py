@@ -385,7 +385,7 @@ def peli_ohi():
 
         viimeinenKortti = poistoPakka[-1]
         
-        if viimeinenKortti.maa == "hertta" and Muuttujat.HP == Muuttujat.maxHP: 
+        if viimeinenKortti.maa == "hertta" and Muuttujat.HP >= Muuttujat.maxHP: 
             pisteet += viimeinenKortti.arvo 
         
     piirrä_pisteet(pisteet)   
@@ -523,6 +523,7 @@ def aloita_peli():
                 if kirous.kohdemaa == päävihollinen.maa:
                     kirottu = True
             päävihollinen.lisävoimat.append(pomokirous)
+            päävihollinen.heikennys = 0
             pääviholliset.append(päävihollinen)
             Muuttujat.palkinto += 1
         
@@ -884,9 +885,15 @@ def peli_loop():
                     elif kauppias2_nappi.rect.collidepoint(pygame.mouse.get_pos()) and KuvaValinnat.kauppias2:
                         
                         if kauppiaat[1].asioi():
-                            toista_sfx("click")
-                            kauppiaat[1].vaihda_tila("myyty")
-                            KuvaValinnat.kauppias2 = False
+                            toista_sfx("click")                            
+                            
+                            if Muuttujat.helmiä > 0:
+                                kauppiaat[1].vaihda_tila("huomio")
+                                kauppiaat[1].toiminto = "kasvataHP"
+                            
+                            else:
+                                kauppiaat[1].vaihda_tila("myyty")    
+                                KuvaValinnat.kauppias2 = False
                             
                         else:
                             toista_sfx("denied")
