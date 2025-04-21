@@ -37,6 +37,12 @@ class Nappi(pygame.sprite.Sprite):
         latausnimi = "kuvat/napit/" + str(nimi) + "_nappi.png"
         self.image = pygame.image.load(latausnimi)
         self.rect = self.image.get_rect()
+    
+    # Käytetään ei-suorakulmaisilla napeilla    
+    def hanki_alfa(self, event):
+        mask = pygame.mask.from_surface(self.image)
+                        
+        return mask.get_at((event.pos[0]-self.rect.x, event.pos[1]-self.rect.y))
 
     def piirrä(self, pohja, xpos = None, ypos = None):
         
@@ -110,3 +116,20 @@ class Kehys(pygame.sprite.Sprite):
                 self.rect.y = ypos
         
         pohja.blit(self.image, self.rect)
+        
+class Tähti(pygame.sprite.Sprite):
+    viiva = (0, 0, 0, 0)
+    
+    def __init__(self, x, y, kuvanro):
+        super().__init__()
+        self.image = pygame.image.load("kuvat/tähdet/" + str(kuvanro) + ".png")
+        self.rect = self.image.get_rect()
+        self.rect.center = (x, y)
+        
+    def piirrä(self, pohja, xpos = None, ypos = None):
+        
+        if xpos != None and ypos != None:
+            self.rect.center = (xpos, ypos)
+        
+        pohja.blit(self.image, self.rect)
+        pygame.draw.aaline(pohja, VALKOINEN, (self.viiva[0], self.viiva[1]), (self.viiva[2], self.viiva[3]))

@@ -1,6 +1,6 @@
 import os
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
-import pygame, sys
+import pygame, random
 from pygame.locals import *
 
 from muuttujat import Muuttujat
@@ -30,6 +30,8 @@ tekijät_tausta = Taustakuva("tekijätTausta")
 valitsetyrmä_tausta = Taustakuva("tyrmävalintaTausta")
 kauppa_tausta = Taustakuva("kauppaTausta")
 seikkailu_tausta = Taustakuva("seikkailuTausta")
+voittoruutu_tausta = Taustakuva("voittoruutu1")
+voittoruutu_etuala = Taustakuva("voittoruutu_etuala")
 
 #Päävalikon napit
 sano_lurjus_nappi = Nappi("sanoLurjus",False)
@@ -64,6 +66,8 @@ kauppias1_nappi.rect.center = (107, 415)
 kauppias2_nappi.rect.center = (301, 415)
 kauppias3_nappi.rect.center = (495, 415)
 kauppias4_nappi.rect.center = (689, 415)
+voitto_jatka_nappi = Nappi("voitto_jatka")
+voitto_lopeta_nappi = Nappi("voitto_lopeta")
 
 viimeisin_lyöty = Kortti()
 
@@ -410,9 +414,30 @@ def piirrä_pisteet(pisteet):
     
     POHJA.fill((0, 0, 0))
     
+    # Joka viiden tyrmän jälkeen näytetään voittoruutu
+    
+    if Muuttujat.skene == "Seikkailu" and Muuttujat.nostoPinoKortit == 0 and Muuttujat.tyrmänro % 5 == 0:
+        peliohi_teksti.päivitä_teksti("Voitit pelin! Onneksi olkoon!",fonttikoko=48)
+        peliohi_teksti.rect.center = (400, 200)
+        peliohi_teksti.piirrä(POHJA)
+        
+        kauppaan_nappi.päivitä_kuva("voittoon")
+        kauppaan_nappi.rect.center = (400, 350)
+        kauppaan_nappi.piirrä(POHJA)
+        
+        if pisteet < 1:
+            pisteet_teksti.päivitä_teksti("Pisteesi: " + str(pisteet),väri=PUNAINEN,fonttikoko=80)
+        else:
+            pisteet_teksti.päivitä_teksti("Pisteesi: " + str(pisteet),väri=VALKOINEN,fonttikoko=80)
+        pisteet_teksti.rect.center = (400, 260)
+        pisteet_teksti.piirrä(POHJA)
+    
+        piirrä_napit(1)
+    
+    
     # Jos seikkailu jatkuu:
     
-    if Muuttujat.skene == "Seikkailu" and Muuttujat.nostoPinoKortit == 0:
+    elif Muuttujat.skene == "Seikkailu" and Muuttujat.nostoPinoKortit == 0:
         peliohi_teksti.päivitä_teksti("Tyrmä suoritettu!",fonttikoko=48)
         peliohi_teksti.rect.center = (400, 200)
         peliohi_teksti.piirrä(POHJA)
@@ -938,6 +963,39 @@ def piirrä_pikavalinnan_kehys(valinta):
         return
 
 
+def löydä_lähin_tähti(tähti):
+    (sijX,sijY) = tähti.rect.center
+    lähinTähti = tähti
+    lähinEtäisyys = math.inf
+    
+    for t in KuvaValinnat.tähdet:
+        (kohdeX,kohdeY) = t.rect.center
+        
+        if (sijX, sijY) != (kohdeX, kohdeY):
+            muutosX = sijX - kohdeX
+            muutosY = sijY - kohdeY
+            hypotenuusa = (muutosX**2 + muutosY**2)**(1/2)
+            
+            if hypotenuusa < lähinEtäisyys:
+                lähinTähti = t
+                lähinEtäisyys = hypotenuusa
+                
+    return (lähinTähti.rect.center)
+                
+
+def luo_tähdet():
+    uusiaTähtiä = 5
+    
+    for t in range(uusiaTähtiä):
+        tähtikuvake = random.randrange(0,9)
+        sijX = random.randrange(240,780)
+        sijY = random.randrange(20,580)        
+        uusiTähti = Tähti(sijX,sijY,tähtikuvake) 
+        loppupiste = löydä_lähin_tähti(uusiTähti) # Tähtikuvion viiva seuraavaan tähteen
+        uusiTähti.viiva = (uusiTähti.rect.center[0], uusiTähti.rect.center[1], loppupiste[0], loppupiste[1])  
+        KuvaValinnat.tähdet.append(uusiTähti)
+    
+
 class KorttiKuvakkeet:
 
     def valitse_kortin_kuvake(kortti):
@@ -972,6 +1030,7 @@ class KuvaValinnat:
     lisävoima1t = ""
     lisävoima2o = ""
     lisävoima2t = ""
+    tähdet = []
 
 
 class SiirtoAnimaatiot:
@@ -1082,5 +1141,4 @@ class Efektit:
     valikko_pieni_kehys = Kehys("valikko_pieni")
     valikko_iso = True
     valikko_hover = 0
-    
     

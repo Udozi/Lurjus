@@ -1,6 +1,6 @@
 import random, os, pääIkkuna, math
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
-import pygame 
+import pygame, sys 
 from pygame.locals import *
 
 from grafiikka import *
@@ -29,10 +29,10 @@ VALKOINEN = (255, 255, 255)
 # Pata (2-14) - Vihollinen (tekee sinuun vahinkoa)
 # Risti (2-14) - Vihollinen (ks. pata)
 korttienMaara = {
-    "ruutu": 9,
-    "hertta": 9,
-    "pata": 13,
-    "risti": 13
+    "ruutu": 1,
+    "hertta": 1,
+    "pata": 1,
+    "risti": 1
 }
 
 
@@ -223,13 +223,13 @@ def pelaa_kortti(i):
             Muuttujat.HP = min(Muuttujat.HP + hpMuutos, Muuttujat.maxHP)
             
         if pelattavaKortti.lisävoimaLöytyy("korjaava") and len(nykyinenAse) > 0:
-            nykyinenAse[0].kestavyys += hpMuutos
-            
-        Muuttujat.voiJuosta = False   
+            nykyinenAse[0].kestavyys += vaikutus   
                 
         if pelattavaKortti.lisävoimaLöytyy("näivettävä") and hpMuutos < 0:
             Muuttujat.maxHP -= 1
+    
         
+    Muuttujat.voiJuosta = False    
     korttejaPöydässä = laske_poytakortit()
     
     if (((esinelöytyy("savukaapu") and (Muuttujat.huoneitaViimePaosta > 0 or Muuttujat.huonenro < 3)) or korttejaPöydässä < 2 and (Muuttujat.skene != "Opastus" or Muuttujat.huonenro > 4 or korttejaPöydässä == 0 or Muuttujat.huonenro == 0)) or (korttejaPöydässä < 3 and Muuttujat.valittuHaaste != None and Muuttujat.valittuHaaste.id == "muuttuvaLabyrintti")) and len(nostoPakka) > 0:
@@ -399,7 +399,8 @@ def nollaa_seikkailu():
     Muuttujat.juomalumoukset.clear()
     Muuttujat.kiroukset.clear()  
     Muuttujat.haasteOtettu = False 
-    pääviholliset.clear()    
+    pääviholliset.clear()
+    KuvaValinnat.tähdet.clear()    
             
             
 def nollaa_peli():
@@ -442,6 +443,12 @@ def aloita_peli():
     
     elif Muuttujat.skene == "Seikkailu":
         
+        lumouslista = Muuttujat.aselumoukset + Muuttujat.juomalumoukset
+        for lumous in lumouslista:
+            maa = "Hertta "
+            if lumous.tyyppi == "lumousa":
+                maa = "Ruutu "
+            #print(maa + str(lumous.indeksi) + ": " + lumous.nimi)
         Muuttujat.tyrmänro += 1
      
         if Muuttujat.valittuHaaste != None and Muuttujat.valittuHaaste.id == "ahtaatHuoneet": Muuttujat.huoneenKoko = 3
@@ -617,11 +624,11 @@ def uusi_huone():
     if Muuttujat.valittuHaaste != None and Muuttujat.valittuHaaste.id == "tulvivaLattia" and Muuttujat.huoneitaViimePaosta < 2 and Muuttujat.huonenro > 3:
         Muuttujat.voiJuosta = False
     
-    
-    if (esinelöytyy("siivet") or (Muuttujat.valittuHaaste != None and Muuttujat.valittuHaaste.id == "ahtaatHuoneet")) and Muuttujat.pakojaPeräkkäin < 2:
-        Muuttujat.voiJuosta = True
-    elif esinelöytyy("siivet") and (Muuttujat.valittuHaaste != None and Muuttujat.valittuHaaste.id == "ahtaatHuoneet") and Muuttujat.pakojaPeräkkäin < 3:
-        Muuttujat.voiJuosta = True
+    if Muuttujat.valittuHaaste == None or (Muuttujat.valittuHaaste.id != "tulvivaLattia" or Muuttujat.huoneitaViimePaosta > 2):
+        if (esinelöytyy("siivet") or (Muuttujat.valittuHaaste != None and Muuttujat.valittuHaaste.id == "ahtaatHuoneet")) and Muuttujat.pakojaPeräkkäin < 2:
+            Muuttujat.voiJuosta = True
+        elif esinelöytyy("siivet") and (Muuttujat.valittuHaaste != None and Muuttujat.valittuHaaste.id == "ahtaatHuoneet") and Muuttujat.pakojaPeräkkäin < 3:
+            Muuttujat.voiJuosta = True
         
     if len(nostoPakka) == 0:
         Muuttujat.voiJuosta = False
@@ -811,18 +818,14 @@ def peli_loop():
                 elif event.type == MOUSEBUTTONDOWN:
                     
                     if vaikea_nappi.rect.collidepoint(pygame.mouse.get_pos()):                        
-                        mask = pygame.mask.from_surface(vaikea_nappi.image)
-                        
-                        if mask.get_at((event.pos[0]-vaikea_nappi.rect.x, event.pos[1]-vaikea_nappi.rect.y)):
+                        if vaikea_nappi.hanki_alfa(event):
                             Muuttujat.skene = "Seikkailu"
                             Muuttujat.tyrmävalinta = "Vaikea"
                             toista_sfx("click")
                             aloita_peli()
                                                     
                     elif helppo_nappi.rect.collidepoint(pygame.mouse.get_pos()):
-                        mask = pygame.mask.from_surface(helppo_nappi.image)
-                        
-                        if mask.get_at((event.pos[0]-helppo_nappi.rect.x, event.pos[1]-helppo_nappi.rect.y)):
+                        if helppo_nappi.hanki_alfa(event):
                             Muuttujat.skene = "Seikkailu" 
                             Muuttujat.tyrmävalinta = "Helppo"
                             toista_sfx("click")
@@ -1017,6 +1020,9 @@ def peli_loop():
                         Muuttujat.tyrmävalinta = "Vaikea"
                         Muuttujat.skene = "Kauppa"
                         valitse_kauppiaat()
+                        
+                    elif event.key == K_8:
+                        Muuttujat.tyrmänro += 1
                             
                     elif len(nykyinenAse) > 0 and event.key == K_6 and not (Muuttujat.peliOhi or (Muuttujat.valittuHaaste != None and Muuttujat.valittuHaaste.id == "pelkokerroin")):
                         toista_sfx("click")
@@ -1084,9 +1090,15 @@ def peli_loop():
                         toista_sfx("click")
                         
                     if kauppaan_nappi.rect.collidepoint(pygame.mouse.get_pos()):
-                        Muuttujat.tyrmävalinta = "Vaikea"
-                        Muuttujat.skene = "Kauppa"
-                        valitse_kauppiaat()
+                        if Muuttujat.tyrmänro % 5 == 0:
+                            Muuttujat.skene = "Voittoruutu"
+                            if Muuttujat.tyrmänro > 24:
+                                luo_tähdet()
+                        
+                        else:
+                            Muuttujat.tyrmävalinta = "Vaikea"
+                            Muuttujat.skene = "Kauppa"
+                            valitse_kauppiaat()
                                                                 
                     elif uusipeli_nappi.rect.collidepoint(pygame.mouse.get_pos()) and (Muuttujat.skene != "Seikkailu" or Muuttujat.peliOhi):
                         if not Muuttujat.peliOhi:
@@ -1168,6 +1180,41 @@ def peli_loop():
                     else:
                         pääIkkuna.Efektit.pikavalinta_hover = 0
 
+        elif Muuttujat.skene == "Voittoruutu":
+            
+            for event in pygame.event.get():
+                if event.type == QUIT:
+                    Muuttujat.käynnissä = False
+
+                elif event.type == MOUSEBUTTONDOWN:    
+
+                    if voitto_jatka_nappi.rect.collidepoint(pygame.mouse.get_pos()):
+                        if voitto_jatka_nappi.hanki_alfa(event):
+                            Muuttujat.skene = "Kauppa"
+                            toista_sfx("click")
+                            valitse_kauppiaat()
+                                        
+                    elif voitto_lopeta_nappi.rect.collidepoint(pygame.mouse.get_pos()):
+                        if voitto_lopeta_nappi.hanki_alfa(event):
+                            toista_sfx("click")
+                            nollaa_seikkailu()
+                            Muuttujat.skene = "Tekijät"
+                            aloita_peli()
+                        
+                elif event.type == MOUSEMOTION:
+                    
+                    if voitto_jatka_nappi.rect.collidepoint(pygame.mouse.get_pos()):
+                        if voitto_jatka_nappi.hanki_alfa(event):
+                            voitto_jatka_nappi.päivitä_kuva("voitto_jatka_valittu")
+                        
+                    elif voitto_lopeta_nappi.rect.collidepoint(pygame.mouse.get_pos()):
+                        if voitto_lopeta_nappi.hanki_alfa(event):
+                            voitto_lopeta_nappi.päivitä_kuva("voitto_lopeta_valittu")
+                        
+                    else:
+                        voitto_jatka_nappi.päivitä_kuva("voitto_jatka")
+                        voitto_lopeta_nappi.päivitä_kuva("voitto_lopeta")    
+                
             siirrä_kohteeseen()
 
         elif Muuttujat.skene == "Tekijät":
@@ -1203,6 +1250,9 @@ def piirrä_kaikki():
 
     if skene == "PaaValikko":
         paaValikko.piirrä(POHJA)
+        if pygame.mixer.get_busy():
+            lurjusKorostus.piirrä(POHJA)
+        
         seikkailu_nappi.piirrä(POHJA, 660, 480)
         pikapeli_nappi.piirrä(POHJA, 400, 480)
         opastus_nappi.piirrä(POHJA, 140, 480)
@@ -1210,9 +1260,6 @@ def piirrä_kaikki():
         tekijät_nappi.piirrä(POHJA, 140, 565)
         lopeta_nappi.piirrä(POHJA, 660, 565)
         piirrä_valikon_kehys(pääIkkuna.Efektit.valikko_iso, pääIkkuna.Efektit.valikko_hover)
-        
-        if pygame.mixer.get_busy():
-            lurjusKorostus.piirrä(POHJA)
         
     elif skene == "ValitseTyrmä":
         
@@ -1438,7 +1485,28 @@ def piirrä_kaikki():
         tekijät_tausta.piirrä(POHJA)
         piirrä_napit(1)
         piirrä_pikavalinnan_kehys(pääIkkuna.Efektit.pikavalinta_hover)
-    
+        
+    elif skene == "Voittoruutu":
+        voittoruutuNumero = math.floor(Muuttujat.tyrmänro/5)
+        
+        if voittoruutuNumero >= 5:
+            voittoruutu_tausta.image = pygame.image.load("kuvat/voittoruutu5.png")
+     
+        elif voittoruutuNumero < 1:
+            voittoruutu_tausta.image = pygame.image.load("kuvat/voittoruutu1.png")
+            
+        else: voittoruutu_tausta.image = pygame.image.load("kuvat/voittoruutu" + str(voittoruutuNumero) + ".png")
+        
+        voittoruutu_tausta.piirrä(POHJA)        
+        
+        for t in KuvaValinnat.tähdet:
+            t.piirrä(POHJA)
+        
+        voittoruutu_etuala.piirrä(POHJA)
+                
+        voitto_jatka_nappi.piirrä(POHJA,115,72)
+        voitto_lopeta_nappi.piirrä(POHJA,415,508)
+
     pygame.display.update()
     kello.tick(FPS) 
     

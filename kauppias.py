@@ -226,7 +226,8 @@ class Kauppias():
             case "kasvataHP":
 
                 Muuttujat.maxHP += 3
-                Muuttujat.HP = Muuttujat.maxHP
+                if Muuttujat.HP < Muuttujat.maxHP:
+                    Muuttujat.HP = Muuttujat.maxHP
             
             case "lumoaPunaisia":
                 

@@ -28,8 +28,6 @@ Nostopinosta paljastetaan pöydälle neljä korttia vierekkäin. Tämä on ensim
 Pelissä edetään pelaamalla huoneen kortteja yksitellen. Kortit kuvastavat maansa mukaan joko aseita, vihollisia 
 ja parantavia taikajuomia. Pelaaja aloittaa 20 elämäpisteellä, mikä on myös suurin mahdollinen määrä elämäpisteitä.
 
- -> Tässä digiversiossa kortteja pelataan kirjoittamalla terminaaliin numero 1, 2, 3 tai 4 ja painamalla ENTER.
-
 Kortteja pelataan huoneesta, kunnes niitä on vain yksi jäljellä. Silloin voit joko pelata huoneen viimeisenkin
 kortin* tai edetä jo seuraavaan huoneeseen paljastamalla kortteja pöydälle, kunnes huoneessa on taas neljä korttia.
 Peliä jatketaan, kunnes kaikki pelin kortit ovat poistopinossa, tai pelaajan terveyspisteet putoavat nollaan.
