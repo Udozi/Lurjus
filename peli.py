@@ -352,7 +352,7 @@ def pakene_huoneesta():
                             
     
     toista_sfx("click")    
-    if esinelöytyy("teleportti"):
+    if esinelöytyy("teleportti") and Muuttujat.valittuHaaste != "muuttuvaLabyrintti":
         random.shuffle(nostoPakka)
         
         for k in nostoPakka:
@@ -1104,7 +1104,7 @@ def peli_loop():
                         palaa_takaisin()
                         toista_sfx("click")
                         
-                    if kauppaan_nappi.rect.collidepoint(pygame.mouse.get_pos()):
+                    if Muuttujat.peliOhi and kauppaan_nappi.rect.collidepoint(pygame.mouse.get_pos()):
                         if Muuttujat.tyrmänro % 5 == 0:
                             Muuttujat.skene = "Voittoruutu"
                             if Muuttujat.tyrmänro > 24:
