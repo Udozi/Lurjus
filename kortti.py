@@ -19,16 +19,13 @@ class Kortti():
         
         if self.maa == "hertta":
             if self.lisävoimaLöytyy("vahvistava"):
-                Muuttujat.juomaVoimaBonus = self.arvo
+                Muuttujat.juomaVoimaBonus += self.arvo
             
             return self.arvo
         
         elif self.maa == "pata" or self.maa == "risti":
             
-            suojaus = Muuttujat.juomaVoimaBonus
-            Muuttujat.juomaVoimaBonus = 0
-            
-            return -self.voima + suojaus
+            return -self.voima
         
         else:
             uusiAse = Ase(self.arvo + Muuttujat.aseenVoimaBonus, self.lisävoimat)

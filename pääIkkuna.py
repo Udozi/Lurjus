@@ -438,7 +438,7 @@ def piirrä_pisteet(pisteet):
     # Jos seikkailu jatkuu:
     
     elif Muuttujat.skene == "Seikkailu" and Muuttujat.nostoPinoKortit == 0:
-        peliohi_teksti.päivitä_teksti("Tyrmä suoritettu!",fonttikoko=48)
+        peliohi_teksti.päivitä_teksti("Tyrmä "+str(Muuttujat.tyrmänro)+" suoritettu!",fonttikoko=48)
         peliohi_teksti.rect.center = (400, 200)
         peliohi_teksti.piirrä(POHJA)
         

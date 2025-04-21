@@ -10,14 +10,10 @@ class Ase():
     teksti = Teksti()
     lisävoimat = []
        
-    def kayta(self, hyokkays, koko, bonus = False):
+    def kayta(self, hyokkays, koko, bonus = 0):
         self.kestavyys = koko
-        
-        if bonus:
-            vahinko = self.voima + 3 - hyokkays
-        
-        else:
-            vahinko = self.voima - hyokkays
+
+        vahinko = self.voima + bonus - hyokkays
         
         return(vahinko)
     

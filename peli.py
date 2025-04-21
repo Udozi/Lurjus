@@ -163,10 +163,14 @@ def pelaa_kortti(i):
             # on oltava pienempi kuin edellinen sillä aseella
             # päihitetty vihollinen
             if nykyinenAse[0].kestavyys > vihollisenVoima or nykyinenAse[0].kestavyys >= vihollisenVoima and nykyinenAse[0].lisävoimaLöytyy("paikkaus"):
-                voimabonus = False
+                voimabonus = 0
                 
                 if pelattavaKortti.maa == "pata" and nykyinenAse[0].lisävoimaLöytyy("murtava") or pelattavaKortti.maa == "risti" and nykyinenAse[0].lisävoimaLöytyy("polttava"):
-                    voimabonus = True
+                    voimabonus = 3
+                    
+                if Muuttujat.juomaVoimaBonus > 0:
+                    voimabonus += Muuttujat.juomaVoimaBonus
+                    Muuttujat.juomaVoimaBonus = 0
                     
                 hpMuutos = int(nykyinenAse[0].kayta(vihollisenVoima, pelattavaKortti.voima, voimabonus))                
                 nykyinenAse.append(pelattavaKortti)
