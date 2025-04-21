@@ -1179,6 +1179,8 @@ def peli_loop():
                         pääIkkuna.Efektit.pikavalinta_hover = 1
                     else:
                         pääIkkuna.Efektit.pikavalinta_hover = 0
+            
+            siirrä_kohteeseen()
 
         elif Muuttujat.skene == "Voittoruutu":
             
@@ -1214,8 +1216,6 @@ def peli_loop():
                     else:
                         voitto_jatka_nappi.päivitä_kuva("voitto_jatka")
                         voitto_lopeta_nappi.päivitä_kuva("voitto_lopeta")    
-                
-            siirrä_kohteeseen()
 
         elif Muuttujat.skene == "Tekijät":
 
