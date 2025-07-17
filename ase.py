@@ -9,6 +9,7 @@ class Ase():
     maa = "ruutu"
     teksti = Teksti()
     lisävoimat = []
+    indeksi = 0
        
     def kayta(self, hyokkays, koko, bonus = 0):
         self.kestavyys = koko
@@ -17,7 +18,7 @@ class Ase():
         
         return(vahinko)
     
-    def __init__(self, arvo = 0, lisävoimat = []):
+    def __init__(self, arvo = 0, lisävoimat = [], indeksi = 0):
         super().__init__()
         self.image = pygame.image.load("kuvat/kortit/kortti_selkä.png")
         self.originalImage = self.image
@@ -25,6 +26,7 @@ class Ase():
         self.voima = arvo
         self.arvo = self.voima
         self.lisävoimat = lisävoimat
+        self.indeksi = indeksi
         
 
     def piirrä(self, pohja):

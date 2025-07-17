@@ -268,7 +268,7 @@ def pelaa_kortti(i):
             
         Muuttujat.helmiä += Muuttujat.palkinto
 
-    if Muuttujat.valittuHaaste != None and Muuttujat.valittuHaaste.id == "muuttuvaLabyrintti" and korttejaPöydässä < 3 and len(nostoPakka) > 0:
+    if not Muuttujat.peliOhi and Muuttujat.valittuHaaste != None and Muuttujat.valittuHaaste.id == "muuttuvaLabyrintti" and korttejaPöydässä < 3 and len(nostoPakka) > 0:
         pakene_huoneesta()
         
     if korttejaPöydässä == 0 and not Muuttujat.peliOhi:
@@ -337,7 +337,6 @@ def pakene_huoneesta():
                 
                 for i in range(len(nostoPakka) - 2):
                     n = -(i+1)
-                    print(str(-n) + " " + str(len(nostoPakka) - 2))
                     k = nostoPakka[n]
                                         
                     if k.maa in varastettavia:
@@ -512,7 +511,7 @@ def aloita_peli():
         # Joka 5. peli pakkaan lisätään kirottu päävihollinen
         if Muuttujat.tyrmänro % 5 == 0:
             if Muuttujat.tyrmänro % 10 == 0:
-                päävihollinen = Kortti("pata", math.floor(15 + Muuttujat.vaikeusaste), False, 13)
+                päävihollinen = Kortti("risti", math.floor(15 + Muuttujat.vaikeusaste), False, 13)
             else:    
                 päävihollinen = Kortti("pata", math.floor(15 + Muuttujat.vaikeusaste), False, 13)
             kirottu = False
@@ -531,7 +530,10 @@ def aloita_peli():
         
         if Muuttujat.valittuHaaste != None and Muuttujat.valittuHaaste.id == "palkkiometsästäjä":
             kortinSuuruus = 14 + math.floor(Muuttujat.vaikeusaste)
-            haasteKortti = Kortti("pata", kortinSuuruus)
+            
+            maa = random.choice(["pata","risti"])
+            
+            haasteKortti = Kortti(maa, kortinSuuruus, False, 14)
             nostoPakka.append(haasteKortti)
                 
         random.shuffle(nostoPakka)
@@ -633,7 +635,7 @@ def uusi_huone():
     if Muuttujat.valittuHaaste != None and Muuttujat.valittuHaaste.id == "tulvivaLattia" and Muuttujat.huoneitaViimePaosta < 2 and Muuttujat.huonenro > 3:
         Muuttujat.voiJuosta = False
     
-    if Muuttujat.valittuHaaste == None or (Muuttujat.valittuHaaste.id != "tulvivaLattia" or Muuttujat.huoneitaViimePaosta > 2):
+    if Muuttujat.valittuHaaste == None or (esinelöytyy("siivet") and Muuttujat.pakojaPeräkkäin < 2) or (Muuttujat.valittuHaaste.id != "tulvivaLattia" and Muuttujat.huoneitaViimePaosta > 2):
         if (esinelöytyy("siivet") or (Muuttujat.valittuHaaste != None and Muuttujat.valittuHaaste.id == "ahtaatHuoneet")) and Muuttujat.pakojaPeräkkäin < 2:
             Muuttujat.voiJuosta = True
         elif esinelöytyy("siivet") and (Muuttujat.valittuHaaste != None and Muuttujat.valittuHaaste.id == "ahtaatHuoneet") and Muuttujat.pakojaPeräkkäin < 3:

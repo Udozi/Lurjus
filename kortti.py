@@ -28,7 +28,7 @@ class Kortti():
             return -self.voima
         
         else:
-            uusiAse = Ase(self.arvo + Muuttujat.aseenVoimaBonus, self.lisävoimat)
+            uusiAse = Ase(self.arvo + Muuttujat.aseenVoimaBonus, self.lisävoimat, self.indeksi)
             Muuttujat.aseenVoimaBonus = 0
             return uusiAse
         

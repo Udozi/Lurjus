@@ -1003,15 +1003,38 @@ class KorttiKuvakkeet:
         kuvake = None
         kansio = "kuvat/kortit/"
         
-        tiedoston_nimi = kansio + kortti.maa + ".png"
+        if Muuttujat.skene == "Seikkailu":
+            
+            jälkiliite = "_00" + str(kortti.indeksi + 1) + ".png"
+            
+            if kortti.indeksi < 9:
+                jälkiliite = "_000" + str(kortti.indeksi + 1) + ".png"
+            
+            tiedoston_nimi = kansio + "seikkailu/" + kortti.maa + jälkiliite
+        
+        else:
+            tiedoston_nimi = kansio + kortti.maa + ".png"
+            
         kuvake = pygame.image.load(tiedoston_nimi)
         return kuvake
     
     def valitse_aseen_kuvake(ase):
         try:          
             kuvake = None
+            kansio = "kuvat/kortit/"
             
-            tiedoston_nimi = "kuvat/kortit/ruutu.png"
+            if Muuttujat.skene == "Seikkailu":
+            
+                jälkiliite = "_00" + str(ase.indeksi + 1) + ".png"
+            
+                if ase.indeksi < 9:
+                    jälkiliite = "_000" + str(ase.indeksi + 1) + ".png"
+            
+                tiedoston_nimi = kansio + "seikkailu/" + ase.maa + jälkiliite
+        
+            else:
+                tiedoston_nimi = kansio + ase.maa + ".png"
+
             kuvake = pygame.image.load(tiedoston_nimi)
             return kuvake
         except:
